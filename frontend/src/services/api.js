@@ -1,8 +1,7 @@
 import axios from 'axios'
-import { applescript } from 'globals'
 
 const authAPI = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: 'http://127.0.0.1:8000/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -20,3 +19,5 @@ authAPI.interceptors.request.use((config) => {
   }
   return config
 })
+
+export default authAPI

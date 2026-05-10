@@ -1,11 +1,47 @@
 <script setup>
 import { ref } from 'vue'
+import authAPI from '@/services/api'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const showModal = ref(false)
 const status = ref(false)
+const email = ref('')
+const send_code_error = ref('')
+const otpCode = ref('')
+const otpError = ref('')
 
 function toggle() {
   showModal.value = !showModal.value
+}
+
+async function sendCode() {
+  try {
+    const response = await authAPI.post('/login/send-code', { email: email.value })
+
+    showModal.value = response.data.otp_sent
+    status.value = response.data.status
+  } catch (error) {
+    send_code_error.value = error.response?.data?.message || 'Login Failed'
+  }
+}
+
+async function verifyCode() {
+  try {
+    const response = await authAPI.post('/login/verify', {
+      email: email.value,
+      code: otpCode.value,
+      otp_sent: showModal.value,
+    })
+
+    if (response.status === 200) {
+      localStorage.setItem('access_token', response.data.access_token)
+      router.replace({ path: '/saln' })
+    }
+  } catch (error) {
+    otpError.value = error.response?.data?.message || 'Verification failed'
+  }
 }
 </script>
 
@@ -14,17 +50,15 @@ function toggle() {
     <h1>SALN Portal</h1>
     <p>Login using your email and a 6-digit verification code.</p>
 
-    <div class="status" v-if="status"></div>
+    <div class="status" v-if="status">{{ status }}</div>
 
     <div class="card">
-      <form method="POST" action="">
+      <form @submit.prevent="sendCode">
         <!-- @csrf -->
         <div class="form-row">
           <label for="email">Email Address</label>
-          <input id="email" name="email" type="email" value="" required />
-          <!-- @error('email') -->
-          <div class="error"></div>
-          <!-- @enderror -->
+          <input v-model="email" id="email" name="email" type="email" required />
+          <div v-if="send_code_error" class="error">{{ send_code_error }}</div>
         </div>
 
         <button type="submit">Send 6-Digit Code</button>
@@ -48,13 +82,21 @@ function toggle() {
       </div>
       <p>Enter the 6-digit code sent to your email.</p>
 
-      <form method="POST" action="">
+      <form @submit.prevent="verifyCode">
         <!-- @csrf -->
         <div class="form-row">
           <label for="code">Verification Code</label>
-          <input id="code" name="code" type="text" inputmode="numeric" maxlength="6" required />
+          <input
+            v-model="otpCode"
+            id="code"
+            name="code"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            required
+          />
           <!-- @error('code') -->
-          <div class="error"></div>
+          <div class="error">{{ otpError }}</div>
           <!-- @enderror -->
         </div>
         <button type="submit">Verify and Login</button>
