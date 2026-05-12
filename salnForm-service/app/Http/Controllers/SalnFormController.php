@@ -4,39 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\SalnForm;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
 
 class SalnFormController extends Controller
 {
-    public function edit(): View
+    public function edit(Request $request): JsonResponse
     {
-        $salnForm = Auth::user()->salnForm;
+        $salnForm = $this->findSalnForm($this->userIdFromAuth());
 
-        return view('saln.form', [
-            'salnForm' => $salnForm,
+        return response()->json([
+            'data' => $this->exportPayload($salnForm),
         ]);
     }
 
-    public function export(): JsonResponse
+    public function export(Request $request): JsonResponse
     {
-        $salnForm = Auth::user()->salnForm;
+        $salnForm = $this->findSalnForm($this->userIdFromAuth());
 
-        return response()->json(
-            $this->exportPayload($salnForm),
-            200,
-            [
-                'Content-Disposition' => 'attachment; filename="saln-progress.json"',
-            ],
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-        );
+        return response()->json([
+            'filename' => 'saln-progress.json',
+            'data' => $this->exportPayload($salnForm),
+        ]);
     }
 
-    public function import(Request $request): RedirectResponse
+    public function import(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'import_file' => ['required', 'file', 'mimetypes:application/json,text/plain', 'max:2048'],
@@ -65,31 +58,42 @@ class SalnFormController extends Controller
         }
 
         $normalizedPayload = $this->normalizeImportedPayload($payload);
-        $validatedPayload = Validator::make($normalizedPayload, $this->rules())->validate();
+        $validatedPayload = Validator::make($normalizedPayload, $this->rules(true))->validate();
 
-        $this->storePayload(Auth::id(), $validatedPayload);
+        $userId = $this->userIdFromAuth();
+        $this->storePayload($userId, $validatedPayload);
+        $salnForm = $this->findSalnForm($userId);
 
-        return back()->with('status', 'SALN JSON imported successfully.');
+        return response()->json([
+            'message' => 'SALN JSON imported successfully.',
+            'data' => $this->exportPayload($salnForm),
+        ]);
     }
 
     public function draft(Request $request): JsonResponse
     {
-        $validated = $this->normalizeDraftPayload($request->all());
+        $normalized = $this->normalizeDraftPayload($request->all());
+        $validated = Validator::make($normalized, $this->rules(true))->validate();
 
-        $this->storePayload(Auth::id(), $validated);
+        $this->storePayload($this->userIdFromAuth(), $validated);
 
         return response()->json([
             'status' => 'saved',
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request): JsonResponse
     {
         $validated = Validator::make($request->all(), $this->rules())->validate();
 
-        $this->storePayload(Auth::id(), $validated);
+        $userId = $this->userIdFromAuth();
+        $this->storePayload($userId, $validated);
+        $salnForm = $this->findSalnForm($userId);
 
-        return back()->with('status', 'SALN form saved successfully.');
+        return response()->json([
+            'message' => 'SALN form saved successfully.',
+            'data' => $this->exportPayload($salnForm),
+        ]);
     }
 
     private function rules(bool $draft = false): array
@@ -188,6 +192,9 @@ class SalnFormController extends Controller
                 'business_interests' => [],
                 'relatives_in_government_service' => [],
                 'liabilities' => [],
+                'total_assets' => '0.00',
+                'total_liabilities' => '0.00',
+                'net_worth' => '0.00',
             ];
         }
 
@@ -206,6 +213,9 @@ class SalnFormController extends Controller
             'business_interests' => $salnForm->business_interests ?? [],
             'relatives_in_government_service' => $salnForm->relatives_in_government_service ?? [],
             'liabilities' => $salnForm->liabilities ?? [],
+            'total_assets' => $this->formatMoney($salnForm->total_assets ?? 0),
+            'total_liabilities' => $this->formatMoney($salnForm->total_liabilities ?? 0),
+            'net_worth' => $this->formatMoney($salnForm->net_worth ?? 0),
         ];
     }
 
@@ -228,7 +238,7 @@ class SalnFormController extends Controller
 
     private function storePayload(int $userId, array $validated): void
     {
-        $current = $this->exportPayload(Auth::user()->salnForm);
+        $current = $this->exportPayload($this->findSalnForm($userId));
 
         $complianceType = ($validated['compliance_type'] ?? '') !== ''
             ? $validated['compliance_type']
@@ -319,40 +329,19 @@ class SalnFormController extends Controller
 
     private function normalizeDraftPayload(array $payload): array
     {
-        $normalized = [
-            'compliance_type' => is_string($payload['compliance_type'] ?? null) ? $payload['compliance_type'] : null,
-            'assumption_date' => is_string($payload['assumption_date'] ?? null) ? $payload['assumption_date'] : null,
-            'annual_year' => is_string($payload['annual_year'] ?? null) || is_int($payload['annual_year'] ?? null) ? (string) $payload['annual_year'] : null,
-            'exit_date' => is_string($payload['exit_date'] ?? null) ? $payload['exit_date'] : null,
-            'declarant' => is_array($payload['declarant'] ?? null) ? $payload['declarant'] : [],
-            'spouse' => is_array($payload['spouse'] ?? null) ? $payload['spouse'] : [],
-            'filing_type' => is_string($payload['filing_type'] ?? null) ? $payload['filing_type'] : null,
-            'additional_spouses' => is_array($payload['additional_spouses'] ?? null) ? $payload['additional_spouses'] : [],
-            'children' => is_array($payload['children'] ?? null) ? $payload['children'] : [],
-            'real_properties' => is_array($payload['real_properties'] ?? null) ? $payload['real_properties'] : [],
-            'personal_properties' => is_array($payload['personal_properties'] ?? null) ? $payload['personal_properties'] : [],
-            'business_interests' => is_array($payload['business_interests'] ?? null) ? $payload['business_interests'] : [],
-            'relatives_in_government_service' => is_array($payload['relatives_in_government_service'] ?? null) ? $payload['relatives_in_government_service'] : [],
-            'liabilities' => is_array($payload['liabilities'] ?? null) ? $payload['liabilities'] : [],
-        ];
+        $normalized = [];
 
-        $normalized['declarant'] = [
-            'family_name' => (string) ($normalized['declarant']['family_name'] ?? ''),
-            'first_name' => (string) ($normalized['declarant']['first_name'] ?? ''),
-            'middle_initial' => (string) ($normalized['declarant']['middle_initial'] ?? ''),
-            'position' => (string) ($normalized['declarant']['position'] ?? ''),
-            'agency_office' => (string) ($normalized['declarant']['agency_office'] ?? ''),
-            'office_address' => (string) ($normalized['declarant']['office_address'] ?? ''),
-        ];
+        foreach (['compliance_type', 'assumption_date', 'annual_year', 'exit_date', 'filing_type'] as $field) {
+            if (array_key_exists($field, $payload)) {
+                $normalized[$field] = $payload[$field];
+            }
+        }
 
-        $normalized['spouse'] = [
-            'family_name' => (string) ($normalized['spouse']['family_name'] ?? ''),
-            'first_name' => (string) ($normalized['spouse']['first_name'] ?? ''),
-            'middle_initial' => (string) ($normalized['spouse']['middle_initial'] ?? ''),
-            'position' => (string) ($normalized['spouse']['position'] ?? ''),
-            'agency_office' => (string) ($normalized['spouse']['agency_office'] ?? ''),
-            'office_address' => (string) ($normalized['spouse']['office_address'] ?? ''),
-        ];
+        foreach (['declarant', 'spouse'] as $section) {
+            if (array_key_exists($section, $payload) && is_array($payload[$section])) {
+                $normalized[$section] = $payload[$section];
+            }
+        }
 
         foreach ([
             'additional_spouses',
@@ -363,14 +352,53 @@ class SalnFormController extends Controller
             'relatives_in_government_service',
             'liabilities',
         ] as $section) {
+            if (array_key_exists($section, $payload) && is_array($payload[$section])) {
+                $normalized[$section] = $payload[$section];
+            }
+        }
+
+        foreach ([
+            'additional_spouses',
+            'children',
+            'real_properties',
+            'personal_properties',
+            'business_interests',
+            'relatives_in_government_service',
+            'liabilities',
+        ] as $section) {
+            if (! array_key_exists($section, $normalized)) {
+                continue;
+            }
+
             $normalized[$section] = array_values(array_filter($normalized[$section], static fn ($item): bool => is_array($item)));
         }
 
         foreach (['real_properties', 'personal_properties', 'business_interests', 'liabilities'] as $ownerScopedSection) {
+            if (! array_key_exists($ownerScopedSection, $normalized)) {
+                continue;
+            }
+
             $normalized[$ownerScopedSection] = $this->applyOwnerScopeDefault($normalized[$ownerScopedSection]);
         }
 
         return $normalized;
+    }
+
+    private function userIdFromAuth(): int
+    {
+        $payload = auth()->payload();
+
+        return (int) $payload->get('sub');
+    }
+
+    private function findSalnForm(int $userId): ?SalnForm
+    {
+        return SalnForm::query()->where('user_id', $userId)->first();
+    }
+
+    private function formatMoney(mixed $value): string
+    {
+        return number_format((float) $value, 2, '.', '');
     }
 
     private function applyOwnerScopeDefault(array $rows): array
