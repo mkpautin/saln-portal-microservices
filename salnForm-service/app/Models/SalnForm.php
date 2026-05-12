@@ -34,6 +34,7 @@ class SalnForm extends Model
     {
         return [
             'compliance_date' => 'date',
+            'compliance_year' => 'integer',
             'declarant' => 'array',
             'spouse' => 'array',
             'additional_spouses' => 'array',

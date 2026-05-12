@@ -1,21 +1,22 @@
 services:
-    db:
-        image: postgres:16-alpine
-        container_name: authentication_service_db
-        restart: unless-stopped
-        ports:
-            - "5432:5432"
-        environment:
-            POSTGRES_DB: ${DB_DATABASE}
-            POSTGRES_USER: ${DB_USERNAME}
-            POSTGRES_PASSWORD: ${DB_PASSWORD}
-        volumes:
-            - postgres_data:/var/lib/postgresql/data
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U root -d authentication_service"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
+  postgres:
+    image: postgres:16
+    container_name: postgres_auth
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-    postgres_data:
+  postgres_data:
+    driver: local
