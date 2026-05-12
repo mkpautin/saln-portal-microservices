@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\SalnPdf\SalnPdfGeneratorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -22,15 +21,18 @@ class SalnPdfController extends Controller
     /**
      * @throws ValidationException
      */
-    public function generate(Request $request): JsonResponse
+    public function generate(Request $request): BinaryFileResponse|JsonResponse
     {
         $this->persistDraftFromRequest($request);
 
-        $userId = $this->userIdFromAuth();
-        $salnForm = $this->findSalnForm($userId);
+        $user = Auth::user();
+        $user->unsetRelation('salnForm');
+        $salnForm = $user->salnForm;
 
         if (! $salnForm) {
-            $salnForm = $this->blankSalnForm($userId);
+            throw ValidationException::withMessages([
+                'pdf' => 'No SALN form found. Please save your form before generating a PDF.',
+            ]);
         }
 
         $this->assertPdfReadiness($salnForm->toArray());
@@ -49,43 +51,7 @@ class SalnPdfController extends Controller
             ], 500);
         }
 
-        $token = Str::random(64);
-        $expiresAt = now()->addMinutes($this->pdfTtlMinutes());
-
-        Cache::put($this->cacheKey($token), [
-            'path' => $generated['path'],
-            'filename' => $generated['filename'],
-            'user_id' => $userId,
-        ], $expiresAt);
-
-        return response()->json([
-            'message' => 'PDF ready.',
-            'download_url' => url('/api/saln/pdf/download/'.$token),
-            'expires_at' => $expiresAt->toIso8601String(),
-        ]);
-    }
-
-    public function download(Request $request, string $token): BinaryFileResponse|JsonResponse
-    {
-        $userId = $this->userIdFromAuth();
-        $payload = Cache::pull($this->cacheKey($token));
-
-        if (! is_array($payload) || (int) ($payload['user_id'] ?? 0) !== $userId) {
-            return response()->json([
-                'message' => 'Not found.',
-            ], 404);
-        }
-
-        $path = $payload['path'] ?? null;
-        $filename = $payload['filename'] ?? 'saln.pdf';
-
-        if (! is_string($path) || ! is_file($path)) {
-            return response()->json([
-                'message' => 'Not found.',
-            ], 404);
-        }
-
-        return response()->download($path, $filename, [
+        return response()->download($generated['path'], $generated['filename'], [
             'Content-Type' => 'application/pdf',
         ])->deleteFileAfterSend(true);
     }
@@ -95,7 +61,39 @@ class SalnPdfController extends Controller
      */
     private function assertPdfReadiness(array $salnForm): void
     {
-        return;
+        $errors = [];
+        $complianceType = $salnForm['compliance_type'] ?? null;
+
+        if (! in_array($complianceType, ['assumption', 'annual', 'exit'], true)) {
+            $errors['compliance_type'] = 'Compliance type is required.';
+        }
+
+        if ($complianceType === 'assumption' && empty($salnForm['compliance_date'])) {
+            $errors['assumption_date'] = 'Assumption date is required.';
+        }
+
+        if ($complianceType === 'annual' && empty($salnForm['compliance_year'])) {
+            $errors['annual_year'] = 'Annual year is required.';
+        }
+
+        if ($complianceType === 'exit' && empty($salnForm['compliance_date'])) {
+            $errors['exit_date'] = 'Exit date is required.';
+        }
+
+        $declarant = is_array($salnForm['declarant'] ?? null) ? $salnForm['declarant'] : [];
+        foreach (['family_name', 'first_name', 'position', 'agency_office', 'office_address'] as $field) {
+            if (trim((string) ($declarant[$field] ?? '')) === '') {
+                $errors['declarant.'.$field] = 'Declarant '.$field.' is required.';
+            }
+        }
+
+        if (! in_array($salnForm['filing_type'] ?? null, ['joint', 'separate', 'not_applicable'], true)) {
+            $errors['filing_type'] = 'Filing type is required.';
+        }
+
+        if ($errors !== []) {
+            throw ValidationException::withMessages($errors);
+        }
     }
 
     private function persistDraftFromRequest(Request $request): void
@@ -105,51 +103,6 @@ class SalnPdfController extends Controller
         }
 
         app(SalnFormController::class)->draft($request);
-    }
-
-    private function userIdFromAuth(): int
-    {
-        $payload = auth()->payload();
-
-        return (int) $payload->get('sub');
-    }
-
-    private function findSalnForm(int $userId): ?\App\Models\SalnForm
-    {
-        return \App\Models\SalnForm::query()->where('user_id', $userId)->first();
-    }
-
-    private function pdfTtlMinutes(): int
-    {
-        return (int) (env('SALN_PDF_TTL_MINUTES', 30));
-    }
-
-    private function blankSalnForm(int $userId): \App\Models\SalnForm
-    {
-        return new \App\Models\SalnForm([
-            'user_id' => $userId,
-            'compliance_type' => 'assumption',
-            'compliance_date' => null,
-            'compliance_year' => null,
-            'declarant' => [],
-            'spouse' => [],
-            'filing_type' => 'joint',
-            'additional_spouses' => [],
-            'children' => [],
-            'real_properties' => [],
-            'personal_properties' => [],
-            'business_interests' => [],
-            'relatives_in_government_service' => [],
-            'liabilities' => [],
-            'total_assets' => 0,
-            'total_liabilities' => 0,
-            'net_worth' => 0,
-        ]);
-    }
-
-    private function cacheKey(string $token): string
-    {
-        return 'saln_pdf_token:'.$token;
     }
 
     private function containsSalnPayload(Request $request): bool

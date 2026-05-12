@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 return [
 
     /*
@@ -65,8 +67,14 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'jwt_payload',
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', User::class),
         ],
+
+        // 'users' => [
+        //     'driver' => 'database',
+        //     'table' => 'users',
+        // ],
     ],
 
     /*
