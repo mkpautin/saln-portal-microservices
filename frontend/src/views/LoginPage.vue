@@ -103,7 +103,6 @@ async function verifyCode() {
       </form>
     </div>
   </div>
-  <button @click="toggle">Toggle</button>
 </template>
 
 <style>
