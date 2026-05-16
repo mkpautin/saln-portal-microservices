@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const authAPI = axios.create({
-  baseURL: 'https://saln2a.upcsweb.dev/api',
+  baseURL: import.meta.env.VITE_AUTH_API_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

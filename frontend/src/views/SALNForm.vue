@@ -1,6 +1,6 @@
 <template>
   <div id="salnFormApp" class="container">
-    <input type="hidden" id="saln-initial-data" :value="initialDataEncoded">
+    <input type="hidden" id="saln-initial-data" :value="initialDataEncoded" />
 
     <div class="actions actions-header">
       <h1>SALN Form</h1>
@@ -11,8 +11,14 @@
         <button type="button" id="salnImportButton" class="btn-dark">Import JSON</button>
 
         <form id="salnImportForm" enctype="multipart/form-data" hidden>
-          <input type="file" id="salnImportInput" name="import_file" accept=".json,application/json">
+          <input
+            type="file"
+            id="salnImportInput"
+            name="import_file"
+            accept=".json,application/json"
+          />
         </form>
+        <button type="button" @click="logout">Logout</button>
       </div>
     </div>
 
@@ -33,7 +39,7 @@
               name="compliance_type"
               value="assumption"
               v-model="form.compliance_type"
-            >
+            />
             <label>Assumption of office as of</label>
           </div>
           <input
@@ -42,7 +48,7 @@
             type="date"
             name="assumption_date"
             v-model="form.assumption_date"
-          >
+          />
         </div>
 
         <div class="compliance-option" data-compliance-option="annual">
@@ -53,7 +59,7 @@
               name="compliance_type"
               value="annual"
               v-model="form.compliance_type"
-            >
+            />
             <label>Annual filing as of December 31,</label>
           </div>
           <input
@@ -65,7 +71,7 @@
             max="2100"
             placeholder="Year"
             v-model="form.annual_year"
-          >
+          />
         </div>
 
         <div class="compliance-option" data-compliance-option="exit">
@@ -76,7 +82,7 @@
               name="compliance_type"
               value="exit"
               v-model="form.compliance_type"
-            >
+            />
             <label>Exit as of</label>
           </div>
           <input
@@ -85,40 +91,89 @@
             type="date"
             name="exit_date"
             v-model="form.exit_date"
-          >
+          />
         </div>
       </div>
 
       <div class="section">
         <h2>Declarant</h2>
         <div class="row">
-          <div class="form-row"><label>Family Name</label><input name="declarant[family_name]" v-model="form.declarant.family_name"></div>
-          <div class="form-row"><label>First Name</label><input name="declarant[first_name]" v-model="form.declarant.first_name"></div>
-          <div class="form-row"><label>Middle Initial (Optional)</label><input name="declarant[middle_initial]" v-model="form.declarant.middle_initial"></div>
-          <div class="form-row"><label>Position</label><input name="declarant[position]" v-model="form.declarant.position"></div>
-          <div class="form-row"><label>Agency/Office</label><input name="declarant[agency_office]" v-model="form.declarant.agency_office"></div>
-          <div class="form-row"><label>Office Address</label><input name="declarant[office_address]" v-model="form.declarant.office_address"></div>
+          <div class="form-row">
+            <label>Family Name</label
+            ><input name="declarant[family_name]" v-model="form.declarant.family_name" />
+          </div>
+          <div class="form-row">
+            <label>First Name</label
+            ><input name="declarant[first_name]" v-model="form.declarant.first_name" />
+          </div>
+          <div class="form-row">
+            <label>Middle Initial (Optional)</label
+            ><input name="declarant[middle_initial]" v-model="form.declarant.middle_initial" />
+          </div>
+          <div class="form-row">
+            <label>Position</label
+            ><input name="declarant[position]" v-model="form.declarant.position" />
+          </div>
+          <div class="form-row">
+            <label>Agency/Office</label
+            ><input name="declarant[agency_office]" v-model="form.declarant.agency_office" />
+          </div>
+          <div class="form-row">
+            <label>Office Address</label
+            ><input name="declarant[office_address]" v-model="form.declarant.office_address" />
+          </div>
         </div>
       </div>
 
       <div class="section">
         <h2>Spouse</h2>
         <div class="row">
-          <div class="form-row"><label>Family Name</label><input name="spouse[family_name]" v-model="form.spouse.family_name"></div>
-          <div class="form-row"><label>First Name</label><input name="spouse[first_name]" v-model="form.spouse.first_name"></div>
-          <div class="form-row"><label>Middle Initial (Optional)</label><input name="spouse[middle_initial]" v-model="form.spouse.middle_initial"></div>
-          <div class="form-row"><label>Position</label><input name="spouse[position]" v-model="form.spouse.position"></div>
-          <div class="form-row"><label>Agency/Office</label><input name="spouse[agency_office]" v-model="form.spouse.agency_office"></div>
-          <div class="form-row"><label>Office Address</label><input name="spouse[office_address]" v-model="form.spouse.office_address"></div>
+          <div class="form-row">
+            <label>Family Name</label
+            ><input name="spouse[family_name]" v-model="form.spouse.family_name" />
+          </div>
+          <div class="form-row">
+            <label>First Name</label
+            ><input name="spouse[first_name]" v-model="form.spouse.first_name" />
+          </div>
+          <div class="form-row">
+            <label>Middle Initial (Optional)</label
+            ><input name="spouse[middle_initial]" v-model="form.spouse.middle_initial" />
+          </div>
+          <div class="form-row">
+            <label>Position</label><input name="spouse[position]" v-model="form.spouse.position" />
+          </div>
+          <div class="form-row">
+            <label>Agency/Office</label
+            ><input name="spouse[agency_office]" v-model="form.spouse.agency_office" />
+          </div>
+          <div class="form-row">
+            <label>Office Address</label
+            ><input name="spouse[office_address]" v-model="form.spouse.office_address" />
+          </div>
         </div>
       </div>
 
       <div class="section">
         <h2>Joint/Separate Filing</h2>
         <div class="inline">
-          <label><input type="radio" name="filing_type" value="joint" v-model="form.filing_type"> Joint Filing</label>
-          <label><input type="radio" name="filing_type" value="separate" v-model="form.filing_type"> Separate Filing</label>
-          <label><input type="radio" name="filing_type" value="not_applicable" v-model="form.filing_type"> Not Applicable</label>
+          <label
+            ><input type="radio" name="filing_type" value="joint" v-model="form.filing_type" />
+            Joint Filing</label
+          >
+          <label
+            ><input type="radio" name="filing_type" value="separate" v-model="form.filing_type" />
+            Separate Filing</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="filing_type"
+              value="not_applicable"
+              v-model="form.filing_type"
+            />
+            Not Applicable</label
+          >
         </div>
       </div>
 
@@ -145,9 +200,13 @@
         <h3 class="personal-properties-heading">Personal Properties</h3>
         <div id="personalPropertiesContainer"></div>
         <button type="button" id="addPersonalPropertyBtn">Add Personal Property</button>
-        <div class="summary">Subtotal (Personal Properties): <span id="personalSubtotal">0.00</span></div>
+        <div class="summary">
+          Subtotal (Personal Properties): <span id="personalSubtotal">0.00</span>
+        </div>
 
-        <div class="summary total-assets-summary">Total Assets: <span id="totalAssets">0.00</span></div>
+        <div class="summary total-assets-summary">
+          Total Assets: <span id="totalAssets">0.00</span>
+        </div>
       </div>
 
       <div class="section">
@@ -178,8 +237,12 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive } from 'vue';
-import salnApi from '../services/salnApi';
+import { computed, onMounted, reactive } from 'vue'
+import salnApi from '../services/salnApi'
+import authAPI from '@/services/api'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const form = reactive({
   compliance_type: 'assumption',
@@ -210,7 +273,7 @@ const form = reactive({
   business_interests: [],
   relatives_in_government_service: [],
   liabilities: [],
-});
+})
 
 const initialDataEncoded = computed(() => {
   const payload = {
@@ -221,72 +284,72 @@ const initialDataEncoded = computed(() => {
     businessInterests: form.business_interests,
     relativesInGovernmentService: form.relatives_in_government_service,
     liabilities: form.liabilities,
-  };
-
-  return btoa(JSON.stringify(payload));
-});
-
-async function loadFormData() {
-  let response;
-
-  try {
-    response = await salnApi.get('/saln');
-  } catch (_error) {
-    return;
   }
 
-  const payload = response.data || {};
-  const data = payload.data || {};
+  return btoa(JSON.stringify(payload))
+})
 
-  applyPayload(data);
+async function loadFormData() {
+  let response
+
+  try {
+    response = await salnApi.get('/saln')
+  } catch (_error) {
+    return
+  }
+
+  const payload = response.data || {}
+  const data = payload.data || {}
+
+  applyPayload(data)
 }
 
 function applyPayload(data) {
-  const payload = data || {};
+  const payload = data || {}
 
-  form.compliance_type = payload.compliance_type || 'assumption';
-  form.assumption_date = payload.assumption_date || '';
-  form.annual_year = payload.annual_year || '';
-  form.exit_date = payload.exit_date || '';
-  form.declarant = { ...form.declarant, ...(payload.declarant || {}) };
-  form.spouse = { ...form.spouse, ...(payload.spouse || {}) };
-  form.filing_type = payload.filing_type || 'joint';
-  form.additional_spouses = payload.additional_spouses || [];
-  form.children = payload.children || [];
-  form.real_properties = payload.real_properties || [];
-  form.personal_properties = payload.personal_properties || [];
-  form.business_interests = payload.business_interests || [];
-  form.relatives_in_government_service = payload.relatives_in_government_service || [];
-  form.liabilities = payload.liabilities || [];
+  form.compliance_type = payload.compliance_type || 'assumption'
+  form.assumption_date = payload.assumption_date || ''
+  form.annual_year = payload.annual_year || ''
+  form.exit_date = payload.exit_date || ''
+  form.declarant = { ...form.declarant, ...(payload.declarant || {}) }
+  form.spouse = { ...form.spouse, ...(payload.spouse || {}) }
+  form.filing_type = payload.filing_type || 'joint'
+  form.additional_spouses = payload.additional_spouses || []
+  form.children = payload.children || []
+  form.real_properties = payload.real_properties || []
+  form.personal_properties = payload.personal_properties || []
+  form.business_interests = payload.business_interests || []
+  form.relatives_in_government_service = payload.relatives_in_government_service || []
+  form.liabilities = payload.liabilities || []
 }
 
 function parseFormFieldName(name) {
-  return name.split(/\[|\]/).filter(Boolean);
+  return name.split(/\[|\]/).filter(Boolean)
 }
 
 function assignFormValue(target, name, value) {
-  const keys = parseFormFieldName(name);
+  const keys = parseFormFieldName(name)
 
   if (!keys.length) {
-    return;
+    return
   }
 
   keys.reduce((cursor, key, index) => {
-    const isLast = index === keys.length - 1;
+    const isLast = index === keys.length - 1
 
     if (isLast) {
-      cursor[key] = value;
-      return cursor;
+      cursor[key] = value
+      return cursor
     }
 
-    const nextKey = keys[index + 1];
+    const nextKey = keys[index + 1]
 
     if (!cursor[key]) {
-      cursor[key] = /^\d+$/.test(nextKey) ? [] : {};
+      cursor[key] = /^\d+$/.test(nextKey) ? [] : {}
     }
 
-    return cursor[key];
-  }, target);
+    return cursor[key]
+  }, target)
 }
 
 function currentFormPayload() {
@@ -305,82 +368,98 @@ function currentFormPayload() {
     business_interests: [],
     relatives_in_government_service: [],
     liabilities: [],
-  };
+  }
 
-  const saveForm = document.getElementById('salnSaveForm');
+  const saveForm = document.getElementById('salnSaveForm')
 
   if (saveForm) {
-    const formData = new FormData(saveForm);
+    const formData = new FormData(saveForm)
 
     for (const [name, value] of formData.entries()) {
-      assignFormValue(payload, name, value);
+      assignFormValue(payload, name, value)
     }
   }
 
-  return payload;
+  return payload
+}
+
+async function logout() {
+  try {
+    const response = await authAPI.post('/logout')
+
+    if (response.status === 200) {
+      router.replace({ path: '/' })
+    }
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 function exportJson() {
-  const blob = new Blob([JSON.stringify(currentFormPayload(), null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = 'saln-progress.json';
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(url);
+  const blob = new Blob([JSON.stringify(currentFormPayload(), null, 2)], {
+    type: 'application/json',
+  })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = 'saln-progress.json'
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  URL.revokeObjectURL(url)
 }
 
 function initSalnForm() {
-  const formContainer = document.getElementById('salnFormApp');
+  const formContainer = document.getElementById('salnFormApp')
 
   if (!formContainer) {
-    return;
+    return
   }
 
-  const saveForm = document.getElementById('salnSaveForm');
-  const draftUrl = toSalnPath(saveForm?.dataset?.draftUrl || '/saln/draft');
-  const pdfUrl = toSalnPath(saveForm?.dataset?.pdfUrl || '/saln/pdf');
-    function toSalnPath(url) {
-      if (!url) {
-        return '';
-      }
-
-      try {
-        const parsed = new URL(url);
-        return parsed.pathname.replace(/^\/api/, '');
-      } catch (_error) {
-        return url.replace(/^\/api/, '');
-      }
+  const saveForm = document.getElementById('salnSaveForm')
+  const draftUrl = toSalnPath(saveForm?.dataset?.draftUrl || '/saln/draft')
+  const pdfUrl = toSalnPath(saveForm?.dataset?.pdfUrl || '/saln/pdf')
+  function toSalnPath(url) {
+    if (!url) {
+      return ''
     }
 
-    function resolveDownloadPath(url) {
-      if (!url) {
-        return '';
-      }
+    try {
+      const parsed = new URL(url)
+      return parsed.pathname.replace(/^\/api/, '')
+    } catch (_error) {
+      return url.replace(/^\/api/, '')
+    }
+  }
 
-      try {
-        const parsed = new URL(url);
-        return parsed.pathname.replace(/^\/api/, '');
-      } catch (_error) {
-        return url.replace(/^\/api/, '');
-      }
+  function resolveDownloadPath(url) {
+    if (!url) {
+      return ''
     }
 
-  const initialDataInput = document.getElementById('saln-initial-data');
-  const importButton = document.getElementById('salnImportButton');
-  const importInput = document.getElementById('salnImportInput');
-  const generatePdfButton = document.getElementById('salnGeneratePdfButton');
-  const autosaveStatus = document.getElementById('autosaveStatus');
+    try {
+      const parsed = new URL(url)
+      return parsed.pathname.replace(/^\/api/, '')
+    } catch (_error) {
+      return url.replace(/^\/api/, '')
+    }
+  }
 
-  const additionalSpousesContainer = document.getElementById('additionalSpousesContainer');
-  const childrenContainer = document.getElementById('childrenContainer');
-  const realPropertiesContainer = document.getElementById('realPropertiesContainer');
-  const personalPropertiesContainer = document.getElementById('personalPropertiesContainer');
-  const businessInterestsContainer = document.getElementById('businessInterestsContainer');
-  const relativesInGovernmentServiceContainer = document.getElementById('relativesInGovernmentServiceContainer');
-  const liabilitiesContainer = document.getElementById('liabilitiesContainer');
+  const initialDataInput = document.getElementById('saln-initial-data')
+  const importButton = document.getElementById('salnImportButton')
+  const importInput = document.getElementById('salnImportInput')
+  const generatePdfButton = document.getElementById('salnGeneratePdfButton')
+  const autosaveStatus = document.getElementById('autosaveStatus')
+
+  const additionalSpousesContainer = document.getElementById('additionalSpousesContainer')
+  const childrenContainer = document.getElementById('childrenContainer')
+  const realPropertiesContainer = document.getElementById('realPropertiesContainer')
+  const personalPropertiesContainer = document.getElementById('personalPropertiesContainer')
+  const businessInterestsContainer = document.getElementById('businessInterestsContainer')
+  const relativesInGovernmentServiceContainer = document.getElementById(
+    'relativesInGovernmentServiceContainer',
+  )
+  const liabilitiesContainer = document.getElementById('liabilitiesContainer')
 
   const counters = {
     spouse: 0,
@@ -390,7 +469,7 @@ function initSalnForm() {
     business: 0,
     relative: 0,
     liability: 0,
-  };
+  }
 
   function loadInitialData() {
     const fallback = {
@@ -401,89 +480,103 @@ function initSalnForm() {
       businessInterests: [],
       relativesInGovernmentService: [],
       liabilities: [],
-    };
+    }
 
     if (!initialDataInput || !initialDataInput.value) {
-      return fallback;
+      return fallback
     }
 
     try {
       return {
         ...fallback,
         ...JSON.parse(atob(initialDataInput.value)),
-      };
+      }
     } catch (_error) {
-      return fallback;
+      return fallback
     }
   }
 
-  const initialData = loadInitialData();
+  const initialData = loadInitialData()
 
   function resetDynamicRows() {
     if (additionalSpousesContainer) {
-      additionalSpousesContainer.innerHTML = '';
+      additionalSpousesContainer.innerHTML = ''
     }
     if (childrenContainer) {
-      childrenContainer.innerHTML = '';
+      childrenContainer.innerHTML = ''
     }
     if (realPropertiesContainer) {
-      realPropertiesContainer.innerHTML = '';
+      realPropertiesContainer.innerHTML = ''
     }
     if (personalPropertiesContainer) {
-      personalPropertiesContainer.innerHTML = '';
+      personalPropertiesContainer.innerHTML = ''
     }
     if (businessInterestsContainer) {
-      businessInterestsContainer.innerHTML = '';
+      businessInterestsContainer.innerHTML = ''
     }
     if (relativesInGovernmentServiceContainer) {
-      relativesInGovernmentServiceContainer.innerHTML = '';
+      relativesInGovernmentServiceContainer.innerHTML = ''
     }
     if (liabilitiesContainer) {
-      liabilitiesContainer.innerHTML = '';
+      liabilitiesContainer.innerHTML = ''
     }
 
-    counters.spouse = 0;
-    counters.child = 0;
-    counters.real = 0;
-    counters.personal = 0;
-    counters.business = 0;
-    counters.relative = 0;
-    counters.liability = 0;
+    counters.spouse = 0
+    counters.child = 0
+    counters.real = 0
+    counters.personal = 0
+    counters.business = 0
+    counters.relative = 0
+    counters.liability = 0
   }
 
   function rebuildRowsFromForm() {
-    (form.additional_spouses || []).forEach(function (row) { addAdditionalSpouseRow(row); });
-    (form.children || []).forEach(function (row) { addChildRow(row); });
-    (form.real_properties || []).forEach(function (row) { addRealPropertyRow(row); });
-    (form.personal_properties || []).forEach(function (row) { addPersonalPropertyRow(row); });
-    (form.business_interests || []).forEach(function (row) { addBusinessInterestRow(row); });
-    (form.relatives_in_government_service || []).forEach(function (row) { addRelativeInGovernmentServiceRow(row); });
-    (form.liabilities || []).forEach(function (row) { addLiabilityRow(row); });
+    ;(form.additional_spouses || []).forEach(function (row) {
+      addAdditionalSpouseRow(row)
+    })
+    ;(form.children || []).forEach(function (row) {
+      addChildRow(row)
+    })
+    ;(form.real_properties || []).forEach(function (row) {
+      addRealPropertyRow(row)
+    })
+    ;(form.personal_properties || []).forEach(function (row) {
+      addPersonalPropertyRow(row)
+    })
+    ;(form.business_interests || []).forEach(function (row) {
+      addBusinessInterestRow(row)
+    })
+    ;(form.relatives_in_government_service || []).forEach(function (row) {
+      addRelativeInGovernmentServiceRow(row)
+    })
+    ;(form.liabilities || []).forEach(function (row) {
+      addLiabilityRow(row)
+    })
   }
 
   function toNumber(value) {
-    const parsed = parseFloat(value);
-    return Number.isFinite(parsed) ? parsed : 0;
+    const parsed = parseFloat(value)
+    return Number.isFinite(parsed) ? parsed : 0
   }
 
   function formatMoney(value) {
-    return value.toFixed(2);
+    return value.toFixed(2)
   }
 
   function createRemoveButton(wrapper) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.textContent = 'Remove';
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.textContent = 'Remove'
     button.addEventListener('click', function () {
-      wrapper.remove();
-      updateTotals();
-      scheduleDraftSave();
-    });
-    return button;
+      wrapper.remove()
+      updateTotals()
+      scheduleDraftSave()
+    })
+    return button
   }
 
   function ownerScopeField(name, selectedValue) {
-    const spouseChildrenOwned = selectedValue === 'spouse_children';
+    const spouseChildrenOwned = selectedValue === 'spouse_children'
 
     return `
             <div class="owner-scope-row">
@@ -493,49 +586,49 @@ function initSalnForm() {
                     Owned by spouse / children
                 </label>
             </div>
-        `;
+        `
   }
 
   function calculateAge(dateStr) {
     if (!dateStr) {
-      return '';
+      return ''
     }
 
-    const birthDate = new Date(dateStr);
+    const birthDate = new Date(dateStr)
     if (Number.isNaN(birthDate.getTime())) {
-      return '';
+      return ''
     }
 
-    const now = new Date();
-    let age = now.getFullYear() - birthDate.getFullYear();
-    const monthDiff = now.getMonth() - birthDate.getMonth();
-    const dayDiff = now.getDate() - birthDate.getDate();
+    const now = new Date()
+    let age = now.getFullYear() - birthDate.getFullYear()
+    const monthDiff = now.getMonth() - birthDate.getMonth()
+    const dayDiff = now.getDate() - birthDate.getDate()
 
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-      age -= 1;
+      age -= 1
     }
 
-    return age >= 0 ? String(age) : '';
+    return age >= 0 ? String(age) : ''
   }
 
   function addAdditionalSpouseRow(data = {}) {
-    const index = counters.spouse++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'list-item';
+    const index = counters.spouse++
+    const wrapper = document.createElement('div')
+    wrapper.className = 'list-item'
     wrapper.innerHTML = `
             <div class="form-row">
                 <label>Name</label>
                 <input name="additional_spouses[${index}][name]" value="${data.name || ''}">
             </div>
-        `;
-    wrapper.appendChild(createRemoveButton(wrapper));
-    additionalSpousesContainer.appendChild(wrapper);
+        `
+    wrapper.appendChild(createRemoveButton(wrapper))
+    additionalSpousesContainer.appendChild(wrapper)
   }
 
   function addChildRow(data = {}) {
-    const index = counters.child++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'list-item';
+    const index = counters.child++
+    const wrapper = document.createElement('div')
+    wrapper.className = 'list-item'
     wrapper.innerHTML = `
             <div class="row">
                 <div class="form-row">
@@ -551,23 +644,23 @@ function initSalnForm() {
                 <label>Age (Auto)</label>
                 <div class="child-age"></div>
             </div>
-        `;
-    wrapper.appendChild(createRemoveButton(wrapper));
-    childrenContainer.appendChild(wrapper);
+        `
+    wrapper.appendChild(createRemoveButton(wrapper))
+    childrenContainer.appendChild(wrapper)
 
-    const dobInput = wrapper.querySelector('.child-dob');
-    const ageTarget = wrapper.querySelector('.child-age');
-    ageTarget.textContent = calculateAge(dobInput.value);
+    const dobInput = wrapper.querySelector('.child-dob')
+    const ageTarget = wrapper.querySelector('.child-age')
+    ageTarget.textContent = calculateAge(dobInput.value)
 
     dobInput.addEventListener('input', function () {
-      ageTarget.textContent = calculateAge(dobInput.value);
-    });
+      ageTarget.textContent = calculateAge(dobInput.value)
+    })
   }
 
   function addRealPropertyRow(data = {}) {
-    const index = counters.real++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'list-item real-property-row';
+    const index = counters.real++
+    const wrapper = document.createElement('div')
+    wrapper.className = 'list-item real-property-row'
     wrapper.innerHTML = `
             <div class="row">
                 <div class="form-row"><label>Description</label><input name="real_properties[${index}][description]" value="${data.description || ''}"></div>
@@ -580,15 +673,15 @@ function initSalnForm() {
                 <div class="form-row"><label>Acquisition Cost</label><input type="number" step="0.01" min="0" name="real_properties[${index}][acquisition_cost]" value="${data.acquisition_cost || ''}"></div>
                 ${ownerScopeField(`real_properties[${index}][owner_scope]`, data.owner_scope)}
             </div>
-        `;
-    wrapper.appendChild(createRemoveButton(wrapper));
-    realPropertiesContainer.appendChild(wrapper);
+        `
+    wrapper.appendChild(createRemoveButton(wrapper))
+    realPropertiesContainer.appendChild(wrapper)
   }
 
   function addPersonalPropertyRow(data = {}) {
-    const index = counters.personal++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'list-item personal-property-row';
+    const index = counters.personal++
+    const wrapper = document.createElement('div')
+    wrapper.className = 'list-item personal-property-row'
     wrapper.innerHTML = `
             <div class="row">
                 <div class="form-row"><label>Description</label><input name="personal_properties[${index}][description]" value="${data.description || ''}"></div>
@@ -596,15 +689,15 @@ function initSalnForm() {
                 <div class="form-row"><label>Acquisition Cost / Amount</label><input type="number" step="0.01" min="0" class="personal-cost" name="personal_properties[${index}][acquisition_cost_amount]" value="${data.acquisition_cost_amount || ''}"></div>
                 ${ownerScopeField(`personal_properties[${index}][owner_scope]`, data.owner_scope)}
             </div>
-        `;
-    wrapper.appendChild(createRemoveButton(wrapper));
-    personalPropertiesContainer.appendChild(wrapper);
+        `
+    wrapper.appendChild(createRemoveButton(wrapper))
+    personalPropertiesContainer.appendChild(wrapper)
   }
 
   function addBusinessInterestRow(data = {}) {
-    const index = counters.business++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'list-item business-interest-row';
+    const index = counters.business++
+    const wrapper = document.createElement('div')
+    wrapper.className = 'list-item business-interest-row'
     wrapper.innerHTML = `
             <div class="row">
                 <div class="form-row"><label>Name of Entity / Business Enterprise</label><input name="business_interests[${index}][name_of_entity_or_business_enterprise]" value="${data.name_of_entity_or_business_enterprise || ''}"></div>
@@ -613,15 +706,15 @@ function initSalnForm() {
                 <div class="form-row"><label>Date of Acquisition of Interest or Connection</label><input type="date" name="business_interests[${index}][date_of_acquisition]" value="${data.date_of_acquisition || ''}"></div>
                 ${ownerScopeField(`business_interests[${index}][owner_scope]`, data.owner_scope)}
             </div>
-        `;
-    wrapper.appendChild(createRemoveButton(wrapper));
-    businessInterestsContainer.appendChild(wrapper);
+        `
+    wrapper.appendChild(createRemoveButton(wrapper))
+    businessInterestsContainer.appendChild(wrapper)
   }
 
   function addRelativeInGovernmentServiceRow(data = {}) {
-    const index = counters.relative++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'list-item relative-government-row';
+    const index = counters.relative++
+    const wrapper = document.createElement('div')
+    wrapper.className = 'list-item relative-government-row'
     wrapper.innerHTML = `
             <div class="row">
                 <div class="form-row"><label>Name of Relative</label><input name="relatives_in_government_service[${index}][name_of_relative]" value="${data.name_of_relative || ''}"></div>
@@ -629,15 +722,15 @@ function initSalnForm() {
                 <div class="form-row"><label>Position</label><input name="relatives_in_government_service[${index}][position]" value="${data.position || ''}"></div>
                 <div class="form-row"><label>Name of Agency / Office and Address</label><input name="relatives_in_government_service[${index}][name_of_agency_office_and_address]" value="${data.name_of_agency_office_and_address || ''}"></div>
             </div>
-        `;
-    wrapper.appendChild(createRemoveButton(wrapper));
-    relativesInGovernmentServiceContainer.appendChild(wrapper);
+        `
+    wrapper.appendChild(createRemoveButton(wrapper))
+    relativesInGovernmentServiceContainer.appendChild(wrapper)
   }
 
   function addLiabilityRow(data = {}) {
-    const index = counters.liability++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'list-item liability-row';
+    const index = counters.liability++
+    const wrapper = document.createElement('div')
+    wrapper.className = 'list-item liability-row'
     wrapper.innerHTML = `
             <div class="row">
                 <div class="form-row"><label>Nature</label><input name="liabilities[${index}][nature]" value="${data.nature || ''}"></div>
@@ -645,283 +738,305 @@ function initSalnForm() {
                 <div class="form-row"><label>Outstanding Balance</label><input type="number" step="0.01" min="0" class="liability-balance" name="liabilities[${index}][outstanding_balance]" value="${data.outstanding_balance || ''}"></div>
                 ${ownerScopeField(`liabilities[${index}][owner_scope]`, data.owner_scope)}
             </div>
-        `;
-    wrapper.appendChild(createRemoveButton(wrapper));
-    liabilitiesContainer.appendChild(wrapper);
+        `
+    wrapper.appendChild(createRemoveButton(wrapper))
+    liabilitiesContainer.appendChild(wrapper)
   }
 
   function updateTotals() {
-    let realSubtotal = 0;
-    let personalSubtotal = 0;
-    let liabilitiesTotal = 0;
+    let realSubtotal = 0
+    let personalSubtotal = 0
+    let liabilitiesTotal = 0
 
     document.querySelectorAll('.real-cost').forEach(function (input) {
-      realSubtotal += toNumber(input.value);
-    });
+      realSubtotal += toNumber(input.value)
+    })
 
     document.querySelectorAll('.personal-cost').forEach(function (input) {
-      personalSubtotal += toNumber(input.value);
-    });
+      personalSubtotal += toNumber(input.value)
+    })
 
     document.querySelectorAll('.liability-balance').forEach(function (input) {
-      liabilitiesTotal += toNumber(input.value);
-    });
+      liabilitiesTotal += toNumber(input.value)
+    })
 
-    const totalAssets = realSubtotal + personalSubtotal;
-    const netWorth = totalAssets - liabilitiesTotal;
+    const totalAssets = realSubtotal + personalSubtotal
+    const netWorth = totalAssets - liabilitiesTotal
 
-    document.getElementById('realSubtotal').textContent = formatMoney(realSubtotal);
-    document.getElementById('personalSubtotal').textContent = formatMoney(personalSubtotal);
-    document.getElementById('totalAssets').textContent = formatMoney(totalAssets);
-    document.getElementById('totalLiabilities').textContent = formatMoney(liabilitiesTotal);
-    document.getElementById('netWorth').textContent = formatMoney(netWorth);
+    document.getElementById('realSubtotal').textContent = formatMoney(realSubtotal)
+    document.getElementById('personalSubtotal').textContent = formatMoney(personalSubtotal)
+    document.getElementById('totalAssets').textContent = formatMoney(totalAssets)
+    document.getElementById('totalLiabilities').textContent = formatMoney(liabilitiesTotal)
+    document.getElementById('netWorth').textContent = formatMoney(netWorth)
   }
 
   function updateComplianceInputs() {
-    const selectedRadio = document.querySelector('.compliance-radio:checked');
-    const selectedValue = selectedRadio ? selectedRadio.value : '';
+    const selectedRadio = document.querySelector('.compliance-radio:checked')
+    const selectedValue = selectedRadio ? selectedRadio.value : ''
 
     document.querySelectorAll('.compliance-option').forEach(function (option) {
-      const optionValue = option.getAttribute('data-compliance-option');
-      const input = option.querySelector('.compliance-input');
+      const optionValue = option.getAttribute('data-compliance-option')
+      const input = option.querySelector('.compliance-input')
 
       if (!input) {
-        return;
+        return
       }
 
-      const isSelected = optionValue === selectedValue;
-      input.disabled = !isSelected;
-      input.required = isSelected;
-    });
+      const isSelected = optionValue === selectedValue
+      input.disabled = !isSelected
+      input.required = isSelected
+    })
   }
 
   function createDraftRequestBody() {
-    return new FormData(saveForm);
+    return new FormData(saveForm)
   }
 
-  let draftTimer = null;
-  let draftInFlight = null;
-  let draftRequestSeq = 0;
-
-  function setAutosaveState(state, message) {
-    if (!autosaveStatus) {
-      return;
-    }
-
-    autosaveStatus.classList.remove(
-      'autosave-idle',
-      'autosave-dirty',
-      'autosave-saving',
-      'autosave-saved',
-      'autosave-error'
-    );
-
-    autosaveStatus.classList.add(`autosave-${state}`);
-    autosaveStatus.textContent = message;
-  }
+  let draftTimer = null
+  let draftInFlight = null
+  let draftRequestSeq = 0
 
   function savedAtMessage() {
-    const now = new Date();
-    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    return `Saved at ${time}`;
+    const now = new Date()
+    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    return `Saved at ${time}`
   }
 
   function persistDraft() {
     if (!saveForm) {
-      return Promise.resolve();
+      return Promise.resolve()
     }
 
-    const requestSeq = ++draftRequestSeq;
-    setAutosaveState('saving', 'Saving...');
+    const requestSeq = ++draftRequestSeq
+    setAutosaveState('saving', 'Saving...')
 
-    const body = createDraftRequestBody();
-    const request = salnApi.post(draftUrl, body, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }).then(function () {
-      if (requestSeq === draftRequestSeq) {
-        setAutosaveState('saved', savedAtMessage());
-      }
+    const body = createDraftRequestBody()
+    const request = salnApi
+      .post(draftUrl, body, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(function () {
+        if (requestSeq === draftRequestSeq) {
+          setAutosaveState('saved', savedAtMessage())
+        }
 
-      return true;
-    }).catch(function () {
-      if (requestSeq === draftRequestSeq) {
-        setAutosaveState('error', 'Autosave failed. Continuing to retry.');
-      }
+        return true
+      })
+      .catch(function () {
+        if (requestSeq === draftRequestSeq) {
+          setAutosaveState('error', 'Autosave failed. Continuing to retry.')
+        }
 
-      return null;
-    }).finally(function () {
-      if (draftInFlight === request) {
-        draftInFlight = null;
-      }
-    });
+        return null
+      })
+      .finally(function () {
+        if (draftInFlight === request) {
+          draftInFlight = null
+        }
+      })
 
-    draftInFlight = request;
-    return request;
+    draftInFlight = request
+    return request
   }
 
   function scheduleDraftSave() {
     if (draftTimer) {
-      window.clearTimeout(draftTimer);
+      window.clearTimeout(draftTimer)
     }
 
-    setAutosaveState('dirty', 'Unsaved changes');
+    setAutosaveState('dirty', 'Unsaved changes')
 
     draftTimer = window.setTimeout(function () {
-      draftTimer = null;
-      persistDraft();
-    }, 500);
+      draftTimer = null
+      persistDraft()
+    }, 500)
   }
 
   function triggerBrowserDownload(blob, fileName) {
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = downloadUrl;
-    anchor.download = fileName;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    window.URL.revokeObjectURL(downloadUrl);
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = downloadUrl
+    anchor.download = fileName
+    document.body.appendChild(anchor)
+    anchor.click()
+    anchor.remove()
+    window.URL.revokeObjectURL(downloadUrl)
   }
 
   function resolveDownloadFilename(response) {
-    const disposition = response.headers.get('content-disposition') || '';
-    const match = disposition.match(/filename="([^"]+)"/i);
+    const disposition = response.headers.get('content-disposition') || ''
+    const match = disposition.match(/filename="([^"]+)"/i)
 
     if (match && match[1]) {
-      return match[1];
+      return match[1]
     }
 
-    return 'saln.pdf';
+    return 'saln.pdf'
   }
 
   async function extractErrorMessage(error) {
-    const payload = error?.response?.data;
+    const payload = error?.response?.data
 
     if (payload?.message) {
-      return payload.message;
+      return payload.message
     }
 
     if (payload?.errors && typeof payload.errors === 'object') {
-      const firstErrorKey = Object.keys(payload.errors)[0];
-      if (firstErrorKey && Array.isArray(payload.errors[firstErrorKey]) && payload.errors[firstErrorKey][0]) {
-        return payload.errors[firstErrorKey][0];
+      const firstErrorKey = Object.keys(payload.errors)[0]
+      if (
+        firstErrorKey &&
+        Array.isArray(payload.errors[firstErrorKey]) &&
+        payload.errors[firstErrorKey][0]
+      ) {
+        return payload.errors[firstErrorKey][0]
       }
     }
 
-    return 'PDF generation failed. Please try again.';
+    return 'PDF generation failed. Please try again.'
   }
 
   async function generatePdf() {
     if (generatePdfButton) {
-      generatePdfButton.disabled = true;
+      generatePdfButton.disabled = true
     }
 
     try {
       if (draftTimer) {
-        window.clearTimeout(draftTimer);
-        draftTimer = null;
+        window.clearTimeout(draftTimer)
+        draftTimer = null
       }
 
       if (draftInFlight) {
-        await draftInFlight;
+        await draftInFlight
       }
 
-      const saved = await persistDraft();
+      const saved = await persistDraft()
       if (!saved) {
-        throw new Error('Autosave failed. Please try again before generating PDF.');
+        throw new Error('Autosave failed. Please try again before generating PDF.')
       }
 
-      setAutosaveState('saving', 'Generating PDF...');
+      setAutosaveState('saving', 'Generating PDF...')
 
-      let payload;
+      let payload
 
       try {
         const response = await salnApi.post(pdfUrl, createDraftRequestBody(), {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        });
-        payload = response.data;
+        })
+        payload = response.data
       } catch (error) {
-        throw new Error(await extractErrorMessage(error));
+        throw new Error(await extractErrorMessage(error))
       }
 
       if (!payload.download_url) {
-        throw new Error('PDF download URL missing.');
+        throw new Error('PDF download URL missing.')
       }
 
-      const downloadPath = resolveDownloadPath(payload.download_url);
+      const downloadPath = resolveDownloadPath(payload.download_url)
       const downloadResponse = await salnApi.get(downloadPath, {
         responseType: 'blob',
         headers: {
           Accept: 'application/pdf',
         },
-      });
+      })
 
-      const disposition = downloadResponse.headers?.['content-disposition'];
+      const disposition = downloadResponse.headers?.['content-disposition']
       const fakeResponse = {
         headers: {
           get: (name) => (name === 'content-disposition' ? disposition : null),
         },
-      };
+      }
 
-      triggerBrowserDownload(downloadResponse.data, resolveDownloadFilename(fakeResponse));
-      setAutosaveState('saved', 'PDF generated successfully.');
+      triggerBrowserDownload(downloadResponse.data, resolveDownloadFilename(fakeResponse))
+      setAutosaveState('saved', 'PDF generated successfully.')
     } catch (error) {
-      setAutosaveState('error', error instanceof Error ? error.message : 'PDF generation failed. Please try again.');
+      setAutosaveState(
+        'error',
+        error instanceof Error ? error.message : 'PDF generation failed. Please try again.',
+      )
     } finally {
       if (generatePdfButton) {
-        generatePdfButton.disabled = false;
+        generatePdfButton.disabled = false
       }
     }
   }
 
-  document.getElementById('addSpouseBtn').addEventListener('click', function () { addAdditionalSpouseRow(); });
-  document.getElementById('addChildBtn').addEventListener('click', function () { addChildRow(); });
-  document.getElementById('addRealPropertyBtn').addEventListener('click', function () { addRealPropertyRow(); updateTotals(); scheduleDraftSave(); });
-  document.getElementById('addPersonalPropertyBtn').addEventListener('click', function () { addPersonalPropertyRow(); updateTotals(); scheduleDraftSave(); });
-  document.getElementById('addBusinessInterestBtn').addEventListener('click', function () { addBusinessInterestRow(); scheduleDraftSave(); });
-  document.getElementById('addRelativeInGovernmentServiceBtn').addEventListener('click', function () { addRelativeInGovernmentServiceRow(); scheduleDraftSave(); });
-  document.getElementById('addLiabilityBtn').addEventListener('click', function () { addLiabilityRow(); updateTotals(); scheduleDraftSave(); });
+  document.getElementById('addSpouseBtn').addEventListener('click', function () {
+    addAdditionalSpouseRow()
+  })
+  document.getElementById('addChildBtn').addEventListener('click', function () {
+    addChildRow()
+  })
+  document.getElementById('addRealPropertyBtn').addEventListener('click', function () {
+    addRealPropertyRow()
+    updateTotals()
+    scheduleDraftSave()
+  })
+  document.getElementById('addPersonalPropertyBtn').addEventListener('click', function () {
+    addPersonalPropertyRow()
+    updateTotals()
+    scheduleDraftSave()
+  })
+  document.getElementById('addBusinessInterestBtn').addEventListener('click', function () {
+    addBusinessInterestRow()
+    scheduleDraftSave()
+  })
+  document
+    .getElementById('addRelativeInGovernmentServiceBtn')
+    .addEventListener('click', function () {
+      addRelativeInGovernmentServiceRow()
+      scheduleDraftSave()
+    })
+  document.getElementById('addLiabilityBtn').addEventListener('click', function () {
+    addLiabilityRow()
+    updateTotals()
+    scheduleDraftSave()
+  })
 
   document.addEventListener('input', function (event) {
-    if (event.target.classList.contains('real-cost') || event.target.classList.contains('personal-cost') || event.target.classList.contains('liability-balance')) {
-      updateTotals();
+    if (
+      event.target.classList.contains('real-cost') ||
+      event.target.classList.contains('personal-cost') ||
+      event.target.classList.contains('liability-balance')
+    ) {
+      updateTotals()
     }
 
     if (event.target.closest('#salnSaveForm')) {
-      scheduleDraftSave();
+      scheduleDraftSave()
     }
-  });
+  })
 
   document.addEventListener('change', function (event) {
     if (event.target.closest('#salnSaveForm')) {
-      scheduleDraftSave();
+      scheduleDraftSave()
     }
-  });
+  })
 
   document.querySelectorAll('.compliance-radio').forEach(function (radio) {
-    radio.addEventListener('change', updateComplianceInputs);
-  });
+    radio.addEventListener('change', updateComplianceInputs)
+  })
 
   if (importButton && importInput) {
     importButton.addEventListener('click', function () {
-      importInput.click();
-    });
+      importInput.click()
+    })
 
     importInput.addEventListener('change', function () {
-      const file = importInput.files && importInput.files[0];
+      const file = importInput.files && importInput.files[0]
 
       if (!file) {
-        return;
+        return
       }
 
-      const payload = new FormData();
-      payload.append('import_file', file);
+      const payload = new FormData()
+      payload.append('import_file', file)
 
-      setAutosaveState('saving', 'Importing JSON...');
+      setAutosaveState('saving', 'Importing JSON...')
 
       salnApi
         .post('/saln/import', payload, {
@@ -931,59 +1046,74 @@ function initSalnForm() {
         })
         .then((response) => response.data)
         .then((responsePayload) => {
-          const data = responsePayload?.data || {};
-          applyPayload(data);
-          resetDynamicRows();
-          rebuildRowsFromForm();
-          updateComplianceInputs();
-          updateTotals();
-          setAutosaveState('saved', 'SALN JSON imported successfully.');
+          const data = responsePayload?.data || {}
+          applyPayload(data)
+          resetDynamicRows()
+          rebuildRowsFromForm()
+          updateComplianceInputs()
+          updateTotals()
+          setAutosaveState('saved', 'SALN JSON imported successfully.')
         })
         .catch((error) => {
-          const message = error?.response?.data?.message || 'Import failed. Please check the file and try again.';
-          setAutosaveState('error', message);
+          const message =
+            error?.response?.data?.message || 'Import failed. Please check the file and try again.'
+          setAutosaveState('error', message)
         })
         .finally(() => {
-          importInput.value = '';
-        });
-    });
+          importInput.value = ''
+        })
+    })
   }
 
   if (generatePdfButton) {
     generatePdfButton.addEventListener('click', function () {
-      void generatePdf();
-    });
+      void generatePdf()
+    })
   }
 
-  (initialData.additionalSpouses || []).forEach(function (row) { addAdditionalSpouseRow(row); });
-  (initialData.children || []).forEach(function (row) { addChildRow(row); });
-  (initialData.realProperties || []).forEach(function (row) { addRealPropertyRow(row); });
-  (initialData.personalProperties || []).forEach(function (row) { addPersonalPropertyRow(row); });
-  (initialData.businessInterests || []).forEach(function (row) { addBusinessInterestRow(row); });
-  (initialData.relativesInGovernmentService || []).forEach(function (row) { addRelativeInGovernmentServiceRow(row); });
-  (initialData.liabilities || []).forEach(function (row) { addLiabilityRow(row); });
+  ;(initialData.additionalSpouses || []).forEach(function (row) {
+    addAdditionalSpouseRow(row)
+  })
+  ;(initialData.children || []).forEach(function (row) {
+    addChildRow(row)
+  })
+  ;(initialData.realProperties || []).forEach(function (row) {
+    addRealPropertyRow(row)
+  })
+  ;(initialData.personalProperties || []).forEach(function (row) {
+    addPersonalPropertyRow(row)
+  })
+  ;(initialData.businessInterests || []).forEach(function (row) {
+    addBusinessInterestRow(row)
+  })
+  ;(initialData.relativesInGovernmentService || []).forEach(function (row) {
+    addRelativeInGovernmentServiceRow(row)
+  })
+  ;(initialData.liabilities || []).forEach(function (row) {
+    addLiabilityRow(row)
+  })
 
-  updateComplianceInputs();
-  updateTotals();
+  updateComplianceInputs()
+  updateTotals()
 
   document.addEventListener('pagehide', function () {
     if (draftTimer) {
-      window.clearTimeout(draftTimer);
-      draftTimer = null;
+      window.clearTimeout(draftTimer)
+      draftTimer = null
     }
 
     if (draftInFlight) {
-      return;
+      return
     }
 
-    void persistDraft();
-  });
+    void persistDraft()
+  })
 }
 
 onMounted(async () => {
-  await loadFormData();
-  initSalnForm();
-});
+  await loadFormData()
+  initSalnForm()
+})
 </script>
 
 <style>
@@ -1007,7 +1137,7 @@ onMounted(async () => {
 
 body {
   margin: 0;
-  font-family: "Segoe UI", "Noto Sans", sans-serif;
+  font-family: 'Segoe UI', 'Noto Sans', sans-serif;
   color: var(--ink);
   background: linear-gradient(125deg, var(--bg-1) 35%, var(--bg-2) 65%);
   padding: 26px 24px 34px;
@@ -1166,8 +1296,8 @@ select:focus {
   border-color: var(--accent);
 }
 
-input[type="radio"],
-input[type="checkbox"] {
+input[type='radio'],
+input[type='checkbox'] {
   width: auto;
   flex-shrink: 0;
   accent-color: var(--accent);
