@@ -17,6 +17,9 @@
             name="import_file"
             accept=".json,application/json"
           />
+          <!-- ADD THIS RIGHT BEFORE </form> -->
+
+          
         </form>
         <button type="button" @click="logout">Logout</button>
       </div>
@@ -232,6 +235,11 @@
         <div id="relativesInGovernmentServiceContainer"></div>
         <button type="button" id="addRelativeInGovernmentServiceBtn">Add Relative</button>
       </div>
+      <div class="save-button-container">
+            <button type="button" id="manualSaveBtn" class="save-btn">
+              Save SALN
+            </button>
+          </div>
     </form>
   </div>
 </template>
@@ -964,7 +972,12 @@ function initSalnForm() {
       }
     }
   }
+  // ADD THIS INSIDE initSalnForm()
+// PLACE IT NEAR THE OTHER BUTTON EVENT LISTENERS
 
+  document.getElementById('manualSaveBtn').addEventListener('click', function () {
+    // SAVE FUNCTION HERE
+  })
   document.getElementById('addSpouseBtn').addEventListener('click', function () {
     addAdditionalSpouseRow()
   })
@@ -1579,5 +1592,40 @@ input[type='checkbox'] {
 
 ::-webkit-scrollbar-track {
   background: #081714;
+}
+
+/* ADD THIS AT THE VERY BOTTOM OF YOUR <style> */
+
+/* BOTTOM SAVE BUTTON */
+
+.save-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  margin-bottom: 50px;
+}
+
+.save-btn {
+  min-width: 260px;
+  padding: 18px 32px;
+  font-size: 1rem;
+  font-weight: 1000;
+  border-radius: 18px;
+  border: 2px solid #7affde;
+  background: linear-gradient(135deg, #19d2a7, #0ea37f);
+  color: white;
+  letter-spacing: 1px;
+  box-shadow: 0 12px 30px rgba(25, 210, 167, 0.3);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.save-btn:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, #11ba91, #0b8768);
+  box-shadow: 0 16px 36px rgba(25, 210, 167, 0.45);
 }
 </style>

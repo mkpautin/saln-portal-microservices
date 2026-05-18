@@ -69,15 +69,7 @@ async function verifyCode() {
           <div class="brand-title">
             Statement of Assets, Liabilities, and Net Worth
           </div>
-
-          <div class="brand-subtitle">
-            Secure Government Filing Portal
-          </div>
         </div>
-      </div>
-
-      <div class="topbar-right">
-        Republic Compliance System
       </div>
     </header>
 
@@ -87,18 +79,15 @@ async function verifyCode() {
       <!-- LEFT CONTENT -->
       <section class="hero-left">
 
-        <div class="hero-chip">
-          Official Digital Filing Platform
-        </div>
-
         <h1 class="title">
-          Secure SALN Filing and Verification Portal
+          Secure SALN Filing Portal
         </h1>
 
         <p class="subtitle">
-          Access your Statement of Assets, Liabilities, and Net Worth records
-          through a secure one-time verification system designed for government
-          employees and authorized personnel.
+          Efficiently create, update, organize, and generate official
+          Statement of Assets, Liabilities, and Net Worth (SALN)
+          documents through a secure digital filing platform designed
+          for government personnel.
         </p>
 
         <div class="info-grid">
@@ -110,8 +99,8 @@ async function verifyCode() {
               <h3>Secure Authentication</h3>
 
               <p>
-                Email-based OTP verification for protected account access and
-                secure document handling.
+                Email-based OTP verification for secure login and
+                protected document management.
               </p>
             </div>
           </div>
@@ -123,8 +112,8 @@ async function verifyCode() {
               <h3>Digital SALN Filing</h3>
 
               <p>
-                Create, update, export, import, and generate official SALN PDF
-                documents online.
+                Create, edit, organize, export, import, and generate
+                official SALN PDF documents online.
               </p>
             </div>
           </div>
@@ -164,14 +153,11 @@ async function verifyCode() {
         <div class="login-card">
 
           <div class="login-header">
-            <div class="login-badge">
-              Government Portal Access
-            </div>
 
             <h2>Login to Continue</h2>
 
             <p>
-              Enter your registered email address to receive a 6-digit
+              Enter your email address to receive a 6-digit
               verification code.
             </p>
           </div>
@@ -183,7 +169,7 @@ async function verifyCode() {
           <form @submit.prevent="sendCode">
 
             <div class="form-row">
-              <label for="email">Government / Registered Email</label>
+              <label for="email">Registered Email</label>
 
               <input
                 v-model="email"
@@ -206,8 +192,9 @@ async function verifyCode() {
           </form>
 
           <div class="login-footer">
-            Authorized personnel only. All login attempts are monitored and
-            recorded for security purposes.
+            Accounts inactive for more than 5 days may be automatically
+            deleted from the system for storage management and security
+            purposes.
           </div>
 
         </div>
@@ -408,18 +395,6 @@ body {
   color: white;
 }
 
-.brand-subtitle {
-  color: var(--text-muted);
-  font-size: 0.88rem;
-  margin-top: 2px;
-}
-
-.topbar-right {
-  color: var(--text-secondary);
-  font-size: 0.92rem;
-  font-weight: 700;
-}
-
 /* HERO */
 
 .hero {
@@ -438,18 +413,6 @@ body {
 
 .hero-left {
   max-width: 760px;
-}
-
-.hero-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: rgba(26, 209, 165, 0.14);
-  border: 1px solid rgba(86, 227, 191, 0.45);
-  color: #dffff7;
-  font-weight: 800;
-  margin-bottom: 24px;
 }
 
 .title {
@@ -545,18 +508,6 @@ body {
   margin-bottom: 24px;
 }
 
-.login-badge {
-  display: inline-flex;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: rgba(26, 209, 165, 0.14);
-  border: 1px solid rgba(86, 227, 191, 0.4);
-  color: #dffff7;
-  font-size: 0.82rem;
-  font-weight: 900;
-  margin-bottom: 16px;
-}
-
 .login-header h2 {
   margin: 0;
   font-size: 2rem;
@@ -634,7 +585,7 @@ input:focus {
   box-shadow: 0 14px 30px rgba(26, 209, 165, 0.4);
 }
 
-/* FOOTER */
+/* LOGIN FOOTER */
 
 .login-footer {
   margin-top: 22px;
