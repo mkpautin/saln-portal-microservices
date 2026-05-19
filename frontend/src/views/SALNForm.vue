@@ -728,9 +728,16 @@ function initSalnForm() {
                 <div class="form-row"><label>Year of Acquisition</label><input type="number" min="1900" max="2100" name="real_properties[${index}][year_of_acquisition]" value="${data.year_of_acquisition || ''}"></div>
                 <div class="form-row"><label>Mode of Acquisition</label><input name="real_properties[${index}][mode_of_acquisition]" value="${data.mode_of_acquisition || ''}"></div>
                 <div class="form-row"><label>Acquisition Cost</label><input type="number" step="0.01" min="0" name="real_properties[${index}][acquisition_cost]" value="${data.acquisition_cost || ''}"></div>
-                ${ownerScopeField(`real_properties[${index}][owner_scope]`, data.owner_scope)}
+                
             </div>
         `
+    const owner = document.createElement('div')
+    owner.innerHTML = ownerScopeField(
+      `real_properties[${index}][owner_scope]`,
+      data.owner_scope
+    )
+
+    wrapper.appendChild(owner)
     wrapper.appendChild(createRemoveButton(wrapper))
     realPropertiesContainer.appendChild(wrapper)
   }
