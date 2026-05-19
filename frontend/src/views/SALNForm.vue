@@ -100,59 +100,108 @@
 
       <div class="section">
         <h2>Declarant</h2>
-        <div class="row">
+
+        <div class="two-column-grid">
           <div class="form-row">
-            <label>Family Name</label
-            ><input name="declarant[family_name]" v-model="form.declarant.family_name" />
+            <label>Family Name</label>
+            <input
+              name="declarant[family_name]"
+              v-model="form.declarant.family_name"
+            />
           </div>
+
           <div class="form-row">
-            <label>First Name</label
-            ><input name="declarant[first_name]" v-model="form.declarant.first_name" />
+            <label>First Name</label>
+            <input
+              name="declarant[first_name]"
+              v-model="form.declarant.first_name"
+            />
           </div>
+
           <div class="form-row">
-            <label>Middle Initial (Optional)</label
-            ><input name="declarant[middle_initial]" v-model="form.declarant.middle_initial" />
+            <label>Middle Initial (Optional)</label>
+            <input
+              name="declarant[middle_initial]"
+              v-model="form.declarant.middle_initial"
+            />
           </div>
+
           <div class="form-row">
-            <label>Position</label
-            ><input name="declarant[position]" v-model="form.declarant.position" />
+            <label>Position</label>
+            <input
+              name="declarant[position]"
+              v-model="form.declarant.position"
+            />
           </div>
+
           <div class="form-row">
-            <label>Agency/Office</label
-            ><input name="declarant[agency_office]" v-model="form.declarant.agency_office" />
+            <label>Agency/Office</label>
+            <input
+              name="declarant[agency_office]"
+              v-model="form.declarant.agency_office"
+            />
           </div>
+
           <div class="form-row">
-            <label>Office Address</label
-            ><input name="declarant[office_address]" v-model="form.declarant.office_address" />
+            <label>Office Address</label>
+            <input
+              name="declarant[office_address]"
+              v-model="form.declarant.office_address"
+            />
           </div>
         </div>
       </div>
 
       <div class="section">
         <h2>Spouse</h2>
-        <div class="row">
+
+        <div class="two-column-grid">
           <div class="form-row">
-            <label>Family Name</label
-            ><input name="spouse[family_name]" v-model="form.spouse.family_name" />
+            <label>Family Name</label>
+            <input
+              name="spouse[family_name]"
+              v-model="form.spouse.family_name"
+            />
           </div>
+
           <div class="form-row">
-            <label>First Name</label
-            ><input name="spouse[first_name]" v-model="form.spouse.first_name" />
+            <label>First Name</label>
+            <input
+              name="spouse[first_name]"
+              v-model="form.spouse.first_name"
+            />
           </div>
+
           <div class="form-row">
-            <label>Middle Initial (Optional)</label
-            ><input name="spouse[middle_initial]" v-model="form.spouse.middle_initial" />
+            <label>Middle Initial (Optional)</label>
+            <input
+              name="spouse[middle_initial]"
+              v-model="form.spouse.middle_initial"
+            />
           </div>
+
           <div class="form-row">
-            <label>Position</label><input name="spouse[position]" v-model="form.spouse.position" />
+            <label>Position</label>
+            <input
+              name="spouse[position]"
+              v-model="form.spouse.position"
+            />
           </div>
+
           <div class="form-row">
-            <label>Agency/Office</label
-            ><input name="spouse[agency_office]" v-model="form.spouse.agency_office" />
+            <label>Agency/Office</label>
+            <input
+              name="spouse[agency_office]"
+              v-model="form.spouse.agency_office"
+            />
           </div>
+
           <div class="form-row">
-            <label>Office Address</label
-            ><input name="spouse[office_address]" v-model="form.spouse.office_address" />
+            <label>Office Address</label>
+            <input
+              name="spouse[office_address]"
+              v-model="form.spouse.office_address"
+            />
           </div>
         </div>
       </div>
@@ -638,7 +687,7 @@ function initSalnForm() {
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item'
     wrapper.innerHTML = `
-            <div class="row">
+            <div class="two-column-grid dynamic-grid">
                 <div class="form-row">
                     <label>Name</label>
                     <input name="children[${index}][name]" value="${data.name || ''}">
@@ -670,7 +719,7 @@ function initSalnForm() {
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item real-property-row'
     wrapper.innerHTML = `
-            <div class="row">
+            <div class="two-column-grid dynamic-grid">
                 <div class="form-row"><label>Description</label><input name="real_properties[${index}][description]" value="${data.description || ''}"></div>
                 <div class="form-row"><label>Kind</label><input name="real_properties[${index}][kind]" value="${data.kind || ''}"></div>
                 <div class="form-row"><label>Exact Location</label><input name="real_properties[${index}][exact_location]" value="${data.exact_location || ''}"></div>
@@ -691,7 +740,7 @@ function initSalnForm() {
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item personal-property-row'
     wrapper.innerHTML = `
-            <div class="row">
+            <div class="two-column-grid dynamic-grid">
                 <div class="form-row"><label>Description</label><input name="personal_properties[${index}][description]" value="${data.description || ''}"></div>
                 <div class="form-row"><label>Acquisition Year</label><input type="number" min="1900" max="2100" name="personal_properties[${index}][acquisition_year]" value="${data.acquisition_year || ''}"></div>
                 <div class="form-row"><label>Acquisition Cost / Amount</label><input type="number" step="0.01" min="0" class="personal-cost" name="personal_properties[${index}][acquisition_cost_amount]" value="${data.acquisition_cost_amount || ''}"></div>
@@ -707,7 +756,7 @@ function initSalnForm() {
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item business-interest-row'
     wrapper.innerHTML = `
-            <div class="row">
+            <div class="two-column-grid dynamic-grid">
                 <div class="form-row"><label>Name of Entity / Business Enterprise</label><input name="business_interests[${index}][name_of_entity_or_business_enterprise]" value="${data.name_of_entity_or_business_enterprise || ''}"></div>
                 <div class="form-row"><label>Business Address</label><input name="business_interests[${index}][business_address]" value="${data.business_address || ''}"></div>
                 <div class="form-row"><label>Nature of Business Interest / Financial Connection</label><input name="business_interests[${index}][nature_of_business_interest_or_financial_connection]" value="${data.nature_of_business_interest_or_financial_connection || ''}"></div>
@@ -724,7 +773,7 @@ function initSalnForm() {
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item relative-government-row'
     wrapper.innerHTML = `
-            <div class="row">
+            <div class="two-column-grid dynamic-grid">
                 <div class="form-row"><label>Name of Relative</label><input name="relatives_in_government_service[${index}][name_of_relative]" value="${data.name_of_relative || ''}"></div>
                 <div class="form-row"><label>Relationship</label><input name="relatives_in_government_service[${index}][relationship]" value="${data.relationship || ''}"></div>
                 <div class="form-row"><label>Position</label><input name="relatives_in_government_service[${index}][position]" value="${data.position || ''}"></div>
@@ -740,7 +789,7 @@ function initSalnForm() {
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item liability-row'
     wrapper.innerHTML = `
-            <div class="row">
+            <div class="two-column-grid dynamic-grid">
                 <div class="form-row"><label>Nature</label><input name="liabilities[${index}][nature]" value="${data.nature || ''}"></div>
                 <div class="form-row"><label>Name of Creditor</label><input name="liabilities[${index}][name_of_creditor]" value="${data.name_of_creditor || ''}"></div>
                 <div class="form-row"><label>Outstanding Balance</label><input type="number" step="0.01" min="0" class="liability-balance" name="liabilities[${index}][outstanding_balance]" value="${data.outstanding_balance || ''}"></div>
@@ -1627,5 +1676,28 @@ input[type='checkbox'] {
   transform: translateY(-3px);
   background: linear-gradient(135deg, #11ba91, #0b8768);
   box-shadow: 0 16px 36px rgba(25, 210, 167, 0.45);
+}
+
+/* TWO COLUMN FORM GRID */
+
+.two-column-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+/* FORCE CONSISTENT SIZING */
+
+.two-column-grid .form-row {
+  width: 100%;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+  .two-column-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
