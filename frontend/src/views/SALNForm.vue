@@ -1700,4 +1700,14 @@ input[type='checkbox'] {
     grid-template-columns: 1fr;
   }
 }
+
+.dynamic-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 768px) {
+  .dynamic-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
