@@ -18,8 +18,6 @@
             accept=".json,application/json"
           />
           <!-- ADD THIS RIGHT BEFORE </form> -->
-
-          
         </form>
         <button type="button" @click="logout">Logout</button>
       </div>
@@ -104,50 +102,32 @@
         <div class="two-column-grid">
           <div class="form-row">
             <label>Family Name</label>
-            <input
-              name="declarant[family_name]"
-              v-model="form.declarant.family_name"
-            />
+            <input name="declarant[family_name]" v-model="form.declarant.family_name" />
           </div>
 
           <div class="form-row">
             <label>First Name</label>
-            <input
-              name="declarant[first_name]"
-              v-model="form.declarant.first_name"
-            />
+            <input name="declarant[first_name]" v-model="form.declarant.first_name" />
           </div>
 
           <div class="form-row">
             <label>Middle Initial (Optional)</label>
-            <input
-              name="declarant[middle_initial]"
-              v-model="form.declarant.middle_initial"
-            />
+            <input name="declarant[middle_initial]" v-model="form.declarant.middle_initial" />
           </div>
 
           <div class="form-row">
             <label>Position</label>
-            <input
-              name="declarant[position]"
-              v-model="form.declarant.position"
-            />
+            <input name="declarant[position]" v-model="form.declarant.position" />
           </div>
 
           <div class="form-row">
             <label>Agency/Office</label>
-            <input
-              name="declarant[agency_office]"
-              v-model="form.declarant.agency_office"
-            />
+            <input name="declarant[agency_office]" v-model="form.declarant.agency_office" />
           </div>
 
           <div class="form-row">
             <label>Office Address</label>
-            <input
-              name="declarant[office_address]"
-              v-model="form.declarant.office_address"
-            />
+            <input name="declarant[office_address]" v-model="form.declarant.office_address" />
           </div>
         </div>
       </div>
@@ -158,50 +138,32 @@
         <div class="two-column-grid">
           <div class="form-row">
             <label>Family Name</label>
-            <input
-              name="spouse[family_name]"
-              v-model="form.spouse.family_name"
-            />
+            <input name="spouse[family_name]" v-model="form.spouse.family_name" />
           </div>
 
           <div class="form-row">
             <label>First Name</label>
-            <input
-              name="spouse[first_name]"
-              v-model="form.spouse.first_name"
-            />
+            <input name="spouse[first_name]" v-model="form.spouse.first_name" />
           </div>
 
           <div class="form-row">
             <label>Middle Initial (Optional)</label>
-            <input
-              name="spouse[middle_initial]"
-              v-model="form.spouse.middle_initial"
-            />
+            <input name="spouse[middle_initial]" v-model="form.spouse.middle_initial" />
           </div>
 
           <div class="form-row">
             <label>Position</label>
-            <input
-              name="spouse[position]"
-              v-model="form.spouse.position"
-            />
+            <input name="spouse[position]" v-model="form.spouse.position" />
           </div>
 
           <div class="form-row">
             <label>Agency/Office</label>
-            <input
-              name="spouse[agency_office]"
-              v-model="form.spouse.agency_office"
-            />
+            <input name="spouse[agency_office]" v-model="form.spouse.agency_office" />
           </div>
 
           <div class="form-row">
             <label>Office Address</label>
-            <input
-              name="spouse[office_address]"
-              v-model="form.spouse.office_address"
-            />
+            <input name="spouse[office_address]" v-model="form.spouse.office_address" />
           </div>
         </div>
       </div>
@@ -285,10 +247,8 @@
         <button type="button" id="addRelativeInGovernmentServiceBtn">Add Relative</button>
       </div>
       <div class="save-button-container">
-            <button type="button" id="manualSaveBtn" class="save-btn">
-              Save SALN
-            </button>
-          </div>
+        <button type="button" id="manualSaveBtn" class="save-btn">Save SALN</button>
+      </div>
     </form>
   </div>
 </template>
@@ -445,6 +405,7 @@ async function logout() {
     const response = await authAPI.post('/logout')
 
     if (response.status === 200) {
+      localStorage.removeItem('access_token')
       router.replace({ path: '/' })
     }
   } catch (error) {
@@ -732,10 +693,7 @@ function initSalnForm() {
             </div>
         `
     const owner = document.createElement('div')
-    owner.innerHTML = ownerScopeField(
-      `real_properties[${index}][owner_scope]`,
-      data.owner_scope
-    )
+    owner.innerHTML = ownerScopeField(`real_properties[${index}][owner_scope]`, data.owner_scope)
 
     wrapper.appendChild(owner)
     wrapper.appendChild(createRemoveButton(wrapper))
@@ -859,6 +817,23 @@ function initSalnForm() {
   let draftTimer = null
   let draftInFlight = null
   let draftRequestSeq = 0
+
+  function setAutosaveState(state, message) {
+    if (!autosaveStatus) {
+      return
+    }
+
+    autosaveStatus.classList.remove(
+      'autosave-idle',
+      'autosave-dirty',
+      'autosave-saving',
+      'autosave-saved',
+      'autosave-error',
+    )
+
+    autosaveStatus.classList.add(`autosave-${state}`)
+    autosaveStatus.textContent = message
+  }
 
   function savedAtMessage() {
     const now = new Date()
@@ -1029,7 +1004,7 @@ function initSalnForm() {
     }
   }
   // ADD THIS INSIDE initSalnForm()
-// PLACE IT NEAR THE OTHER BUTTON EVENT LISTENERS
+  // PLACE IT NEAR THE OTHER BUTTON EVENT LISTENERS
 
   document.getElementById('manualSaveBtn').addEventListener('click', function () {
     // SAVE FUNCTION HERE
@@ -1225,10 +1200,7 @@ body,
   margin: 0;
   min-height: 100%;
   width: 100%;
-  font-family:
-    Inter,
-    'Segoe UI',
-    sans-serif;
+  font-family: Inter, 'Segoe UI', sans-serif;
   background:
     radial-gradient(circle at top left, #10352f 0%, transparent 35%),
     radial-gradient(circle at bottom right, #0c4d42 0%, transparent 25%),
@@ -1567,11 +1539,7 @@ input[type='checkbox'] {
 }
 
 .total-assets-summary {
-  background: linear-gradient(
-    135deg,
-    rgba(24, 194, 156, 0.22),
-    rgba(13, 97, 79, 0.3)
-  );
+  background: linear-gradient(135deg, rgba(24, 194, 156, 0.22), rgba(13, 97, 79, 0.3));
   border: 2px solid #4cf0c7;
 }
 
