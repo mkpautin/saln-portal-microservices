@@ -332,6 +332,15 @@ body {
       #f1f5f9
     );
 }
+.container {
+  width: 100%;
+  max-width: 1280px;
+
+  margin: 0 auto;
+
+  padding-left: 24px;
+  padding-right: 24px;
+}
 
 /* REMOVE FUTURISTIC GLOWS */
 
@@ -344,12 +353,6 @@ body {
 .topbar {
   width: 100%;
 
-  padding: 22px 36px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
   background: white;
 
   border-bottom: 1px solid var(--border);
@@ -359,10 +362,20 @@ body {
   z-index: 20;
 }
 
+
+
 .brand {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+.logo {
+  width: 54px;
+  height: 54px;
+
+  object-fit: contain;
+
+  border-radius: 14px;
 }
 
 .brand-badge {
