@@ -64,7 +64,7 @@ async function verifyCode() {
     <header class="topbar">
       <div class="brand">
         <div class="brand-badge">
-          <img src="/logo.png" alt="SALN Logo" class="brand-logo" />
+          <img src="/favicon.ico" alt="SALN Logo" class="brand-logo" />
         </div>
 
         <div>
@@ -94,7 +94,7 @@ async function verifyCode() {
         <div class="info-grid">
 
           <div class="info-card">
-            <div class="info-icon">🧾</div>
+            <div class="info-icon"></div>
 
             <div>
               <h3>Secure Authentication</h3>
@@ -107,7 +107,7 @@ async function verifyCode() {
           </div>
 
           <div class="info-card">
-            <div class="info-icon">🧾</div>
+            <div class="info-icon"></div>
 
             <div>
               <h3>Digital SALN Filing</h3>
@@ -120,7 +120,7 @@ async function verifyCode() {
           </div>
 
           <div class="info-card">
-            <div class="info-icon">🧾</div>
+            <div class="info-icon"></div>
 
             <div>
               <h3>Autosave Drafts</h3>
@@ -133,7 +133,7 @@ async function verifyCode() {
           </div>
 
           <div class="info-card">
-            <div class="info-icon">🧾</div>
+            <div class="info-icon"></div>
 
             <div>
               <h3>Protected Access</h3>
@@ -380,24 +380,6 @@ body {
 }
 
 .brand-badge {
-  width: 54px;
-  height: 54px;
-
-  border-radius: 14px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: var(--accent);
-
-  color: white;
-
-  font-weight: 800;
-  font-size: 0.95rem;
-}
-
-.brand-badge {
   width: 56px;
   height: 56px;
 
@@ -405,10 +387,8 @@ body {
   align-items: center;
   justify-content: center;
 
-  border-radius: 14px;
 
   background: white;
-  border: 1px solid var(--border);
 
   overflow: hidden;
 }
@@ -517,36 +497,6 @@ body {
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
-.info-icon {
-  width: 50px;
-  height: 50px;
-
-  border-radius: 14px;
-
-  background: #eff6ff;
-
-  border: 1px solid #bfdbfe;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 1.1rem;
-
-  flex-shrink: 0;
-
-  color: var(--accent);
-
-  font-weight: 700;
-}
-
-.info-card h3 {
-  margin: 0 0 8px;
-
-  font-size: 1rem;
-
-  color: var(--text-primary);
-}
 
 .info-card p {
   margin: 0;
