@@ -450,19 +450,6 @@ function initSalnForm() {
     }
   }
 
-  function resolveDownloadPath(url) {
-    if (!url) {
-      return ''
-    }
-
-    try {
-      const parsed = new URL(url)
-      return parsed.pathname.replace(/^\/api/, '')
-    } catch (_error) {
-      return url.replace(/^\/api/, '')
-    }
-  }
-
   const initialDataInput = document.getElementById('saln-initial-data')
   const importButton = document.getElementById('salnImportButton')
   const importInput = document.getElementById('salnImportInput')
@@ -814,9 +801,18 @@ function initSalnForm() {
     return new FormData(saveForm)
   }
 
+  function createDraftSignature() {
+    if (!saveForm) {
+      return ''
+    }
+
+    return JSON.stringify(Array.from(new FormData(saveForm).entries()))
+  }
+
   let draftTimer = null
   let draftInFlight = null
   let draftRequestSeq = 0
+  let lastSavedDraftSignature = ''
 
   function setAutosaveState(state, message) {
     if (!autosaveStatus) {
@@ -846,6 +842,20 @@ function initSalnForm() {
       return Promise.resolve()
     }
 
+    if (draftInFlight) {
+      const activeRequest = draftInFlight
+
+      return activeRequest.then(function () {
+        return persistDraft()
+      })
+    }
+
+    const draftSignature = createDraftSignature()
+
+    if (draftSignature === lastSavedDraftSignature) {
+      return Promise.resolve(true)
+    }
+
     const requestSeq = ++draftRequestSeq
     setAutosaveState('saving', 'Saving...')
 
@@ -858,6 +868,7 @@ function initSalnForm() {
       })
       .then(function () {
         if (requestSeq === draftRequestSeq) {
+          lastSavedDraftSignature = draftSignature
           setAutosaveState('saved', savedAtMessage())
         }
 
@@ -881,6 +892,18 @@ function initSalnForm() {
   }
 
   function scheduleDraftSave() {
+    const draftSignature = createDraftSignature()
+
+    if (draftSignature === lastSavedDraftSignature) {
+      if (draftTimer) {
+        window.clearTimeout(draftTimer)
+        draftTimer = null
+      }
+
+      setAutosaveState('saved', 'All changes saved')
+      return
+    }
+
     if (draftTimer) {
       window.clearTimeout(draftTimer)
     }
@@ -893,26 +916,13 @@ function initSalnForm() {
     }, 500)
   }
 
-  function triggerBrowserDownload(blob, fileName) {
-    const downloadUrl = window.URL.createObjectURL(blob)
+  function triggerDirectDownload(downloadUrl) {
     const anchor = document.createElement('a')
     anchor.href = downloadUrl
-    anchor.download = fileName
+    anchor.rel = 'noopener'
     document.body.appendChild(anchor)
     anchor.click()
     anchor.remove()
-    window.URL.revokeObjectURL(downloadUrl)
-  }
-
-  function resolveDownloadFilename(response) {
-    const disposition = response.headers.get('content-disposition') || ''
-    const match = disposition.match(/filename="([^"]+)"/i)
-
-    if (match && match[1]) {
-      return match[1]
-    }
-
-    return 'saln.pdf'
   }
 
   async function extractErrorMessage(error) {
@@ -975,22 +985,7 @@ function initSalnForm() {
         throw new Error('PDF download URL missing.')
       }
 
-      const downloadPath = resolveDownloadPath(payload.download_url)
-      const downloadResponse = await salnApi.get(downloadPath, {
-        responseType: 'blob',
-        headers: {
-          Accept: 'application/pdf',
-        },
-      })
-
-      const disposition = downloadResponse.headers?.['content-disposition']
-      const fakeResponse = {
-        headers: {
-          get: (name) => (name === 'content-disposition' ? disposition : null),
-        },
-      }
-
-      triggerBrowserDownload(downloadResponse.data, resolveDownloadFilename(fakeResponse))
+      triggerDirectDownload(payload.download_url)
       setAutosaveState('saved', 'PDF generated successfully.')
     } catch (error) {
       setAutosaveState(
@@ -1003,11 +998,8 @@ function initSalnForm() {
       }
     }
   }
-  // ADD THIS INSIDE initSalnForm()
-  // PLACE IT NEAR THE OTHER BUTTON EVENT LISTENERS
-
   document.getElementById('manualSaveBtn').addEventListener('click', function () {
-    // SAVE FUNCTION HERE
+    void persistDraft()
   })
   document.getElementById('addSpouseBtn').addEventListener('click', function () {
     addAdditionalSpouseRow()
@@ -1096,6 +1088,7 @@ function initSalnForm() {
           rebuildRowsFromForm()
           updateComplianceInputs()
           updateTotals()
+          lastSavedDraftSignature = createDraftSignature()
           setAutosaveState('saved', 'SALN JSON imported successfully.')
         })
         .catch((error) => {
@@ -1139,6 +1132,7 @@ function initSalnForm() {
 
   updateComplianceInputs()
   updateTotals()
+  lastSavedDraftSignature = createDraftSignature()
 
   document.addEventListener('pagehide', function () {
     if (draftTimer) {
