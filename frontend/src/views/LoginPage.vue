@@ -63,7 +63,9 @@ async function verifyCode() {
     <!-- TOPBAR -->
     <header class="topbar">
       <div class="brand">
-        <div class="brand-badge">SALN</div>
+        <div class="brand-badge">
+          <img src="/logo.png" alt="SALN Logo" class="brand-logo" />
+        </div>
 
         <div>
           <div class="brand-title">
@@ -89,11 +91,10 @@ async function verifyCode() {
           documents through a secure digital filing platform designed
           for government personnel.
         </p>
-
         <div class="info-grid">
 
           <div class="info-card">
-            <div class="info-icon">✓</div>
+            <div class="info-icon">🧾</div>
 
             <div>
               <h3>Secure Authentication</h3>
@@ -106,7 +107,7 @@ async function verifyCode() {
           </div>
 
           <div class="info-card">
-            <div class="info-icon">📄</div>
+            <div class="info-icon">🧾</div>
 
             <div>
               <h3>Digital SALN Filing</h3>
@@ -119,7 +120,7 @@ async function verifyCode() {
           </div>
 
           <div class="info-card">
-            <div class="info-icon">⚡</div>
+            <div class="info-icon">🧾</div>
 
             <div>
               <h3>Autosave Drafts</h3>
@@ -132,7 +133,7 @@ async function verifyCode() {
           </div>
 
           <div class="info-card">
-            <div class="info-icon">🔒</div>
+            <div class="info-icon">🧾</div>
 
             <div>
               <h3>Protected Access</h3>
@@ -394,6 +395,30 @@ body {
 
   font-weight: 800;
   font-size: 0.95rem;
+}
+
+.brand-badge {
+  width: 56px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: white;
+  border: 1px solid var(--border);
+
+  overflow: hidden;
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  padding: 6px;
 }
 
 .brand-title {
