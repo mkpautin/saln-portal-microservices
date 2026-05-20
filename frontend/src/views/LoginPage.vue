@@ -362,14 +362,7 @@ body {
   z-index: 20;
 }
 
-.topbar-inner {
-  padding-top: 22px;
-  padding-bottom: 22px;
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
 .brand {
   display: flex;
@@ -416,8 +409,7 @@ body {
   width: 100%;
   min-height: calc(100vh - 100px);
 
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding: 50px 40px;
 
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -425,10 +417,6 @@ body {
   gap: 50px;
 
   align-items: center;
-}
-
-.hero-left {
-  padding-right: 20px;
 }
 
 /* LEFT */
@@ -551,6 +539,7 @@ body {
   display: flex;
   justify-content: center;
 }
+
 .login-card {
   width: 100%;
   max-width: 470px;
@@ -563,10 +552,7 @@ body {
 
   padding: 36px;
 
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.08);
-
-  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
 }
 
 .login-header {
@@ -844,10 +830,10 @@ input:focus {
     max-width: 100%;
   }
 }
+
 @media (max-width: 760px) {
-  .topbar-inner {
-    padding-top: 20px;
-    padding-bottom: 20px;
+  .topbar {
+    padding: 20px;
 
     flex-direction: column;
 
@@ -857,8 +843,7 @@ input:focus {
   }
 
   .hero {
-    padding-top: 24px;
-    padding-bottom: 24px;
+    padding: 20px;
   }
 
   .title {
@@ -871,11 +856,6 @@ input:focus {
 
   .login-card {
     padding: 24px;
-  }
-
-  .container {
-    padding-left: 18px;
-    padding-right: 18px;
   }
 }
 
