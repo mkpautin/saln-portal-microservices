@@ -805,17 +805,15 @@ input:focus {
     max-width: 100%;
   }
 }
+.topbar {
+  padding: 18px 32px;
+}
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .topbar {
-    padding: 20px;
-
-    flex-direction: column;
-
-    gap: 16px;
-
-    align-items: flex-start;
+    padding: 16px 18px;
   }
+
 
   .hero {
     padding: 20px;
