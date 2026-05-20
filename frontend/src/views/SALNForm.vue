@@ -691,14 +691,46 @@ function initSalnForm() {
     const index = counters.personal++
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item personal-property-row'
+
     wrapper.innerHTML = `
-            <div class="two-column-grid dynamic-grid">
-                <div class="form-row"><label>Description</label><input name="personal_properties[${index}][description]" value="${data.description || ''}"></div>
-                <div class="form-row"><label>Acquisition Year</label><input type="number" min="1900" max="2100" name="personal_properties[${index}][acquisition_year]" value="${data.acquisition_year || ''}"></div>
-                <div class="form-row"><label>Acquisition Cost / Amount</label><input type="number" step="0.01" min="0" class="personal-cost" name="personal_properties[${index}][acquisition_cost_amount]" value="${data.acquisition_cost_amount || ''}"></div>
-                ${ownerScopeField(`personal_properties[${index}][owner_scope]`, data.owner_scope)}
-            </div>
-        `
+          <div class="two-column-grid dynamic-grid">
+              <div class="form-row">
+                  <label>Description</label>
+                  <input name="personal_properties[${index}][description]" value="${data.description || ''}">
+              </div>
+
+              <div class="form-row">
+                  <label>Acquisition Year</label>
+                  <input
+                    type="number"
+                    min="1900"
+                    max="2100"
+                    name="personal_properties[${index}][acquisition_year]"
+                    value="${data.acquisition_year || ''}"
+                  >
+              </div>
+
+              <div class="form-row">
+                  <label>Acquisition Cost / Amount</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    class="personal-cost"
+                    name="personal_properties[${index}][acquisition_cost_amount]"
+                    value="${data.acquisition_cost_amount || ''}"
+                  >
+              </div>
+          </div>
+      `
+
+    const owner = document.createElement('div')
+    owner.innerHTML = ownerScopeField(
+      `personal_properties[${index}][owner_scope]`,
+      data.owner_scope,
+    )
+
+    wrapper.appendChild(owner)
     wrapper.appendChild(createRemoveButton(wrapper))
     personalPropertiesContainer.appendChild(wrapper)
   }
@@ -735,19 +767,50 @@ function initSalnForm() {
     wrapper.appendChild(createRemoveButton(wrapper))
     relativesInGovernmentServiceContainer.appendChild(wrapper)
   }
-
   function addLiabilityRow(data = {}) {
     const index = counters.liability++
     const wrapper = document.createElement('div')
     wrapper.className = 'list-item liability-row'
+
     wrapper.innerHTML = `
-            <div class="two-column-grid dynamic-grid">
-                <div class="form-row"><label>Nature</label><input name="liabilities[${index}][nature]" value="${data.nature || ''}"></div>
-                <div class="form-row"><label>Name of Creditor</label><input name="liabilities[${index}][name_of_creditor]" value="${data.name_of_creditor || ''}"></div>
-                <div class="form-row"><label>Outstanding Balance</label><input type="number" step="0.01" min="0" class="liability-balance" name="liabilities[${index}][outstanding_balance]" value="${data.outstanding_balance || ''}"></div>
-                ${ownerScopeField(`liabilities[${index}][owner_scope]`, data.owner_scope)}
-            </div>
-        `
+          <div class="two-column-grid dynamic-grid">
+              <div class="form-row">
+                  <label>Nature</label>
+                  <input
+                    name="liabilities[${index}][nature]"
+                    value="${data.nature || ''}"
+                  >
+              </div>
+
+              <div class="form-row">
+                  <label>Name of Creditor</label>
+                  <input
+                    name="liabilities[${index}][name_of_creditor]"
+                    value="${data.name_of_creditor || ''}"
+                  >
+              </div>
+
+              <div class="form-row">
+                  <label>Outstanding Balance</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    class="liability-balance"
+                    name="liabilities[${index}][outstanding_balance]"
+                    value="${data.outstanding_balance || ''}"
+                  >
+              </div>
+          </div>
+      `
+
+    const owner = document.createElement('div')
+    owner.innerHTML = ownerScopeField(
+      `liabilities[${index}][owner_scope]`,
+      data.owner_scope,
+    )
+
+    wrapper.appendChild(owner)
     wrapper.appendChild(createRemoveButton(wrapper))
     liabilitiesContainer.appendChild(wrapper)
   }
@@ -1207,11 +1270,16 @@ body,
 body {
   padding: 0;
 }
-
 #salnFormApp {
   width: 100%;
   min-height: 100vh;
-  padding: 24px;
+
+  padding-top: 24px;
+  padding-bottom: 24px;
+
+  /* around 1/8 spacing on both sides */
+  padding-left: 12.5%;
+  padding-right: 12.5%;
 }
 
 .container {
