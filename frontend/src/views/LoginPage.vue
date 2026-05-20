@@ -332,6 +332,15 @@ body {
       #f1f5f9
     );
 }
+.container {
+  width: 100%;
+  max-width: 1280px;
+
+  margin: 0 auto;
+
+  padding-left: 24px;
+  padding-right: 24px;
+}
 
 /* REMOVE FUTURISTIC GLOWS */
 
@@ -344,12 +353,6 @@ body {
 .topbar {
   width: 100%;
 
-  padding: 22px 36px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
   background: white;
 
   border-bottom: 1px solid var(--border);
@@ -359,10 +362,27 @@ body {
   z-index: 20;
 }
 
+.topbar-inner {
+  padding-top: 22px;
+  padding-bottom: 22px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+.logo {
+  width: 54px;
+  height: 54px;
+
+  object-fit: contain;
+
+  border-radius: 14px;
 }
 
 .brand-badge {
@@ -396,7 +416,8 @@ body {
   width: 100%;
   min-height: calc(100vh - 100px);
 
-  padding: 50px 40px;
+  padding-top: 50px;
+  padding-bottom: 50px;
 
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -404,6 +425,10 @@ body {
   gap: 50px;
 
   align-items: center;
+}
+
+.hero-left {
+  padding-right: 20px;
 }
 
 /* LEFT */
@@ -526,7 +551,6 @@ body {
   display: flex;
   justify-content: center;
 }
-
 .login-card {
   width: 100%;
   max-width: 470px;
@@ -539,7 +563,10 @@ body {
 
   padding: 36px;
 
-  box-shadow: var(--shadow);
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.08);
+
+  backdrop-filter: blur(10px);
 }
 
 .login-header {
@@ -817,10 +844,10 @@ input:focus {
     max-width: 100%;
   }
 }
-
 @media (max-width: 760px) {
-  .topbar {
-    padding: 20px;
+  .topbar-inner {
+    padding-top: 20px;
+    padding-bottom: 20px;
 
     flex-direction: column;
 
@@ -830,7 +857,8 @@ input:focus {
   }
 
   .hero {
-    padding: 20px;
+    padding-top: 24px;
+    padding-bottom: 24px;
   }
 
   .title {
@@ -843,6 +871,11 @@ input:focus {
 
   .login-card {
     padding: 24px;
+  }
+
+  .container {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 }
 
