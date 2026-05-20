@@ -671,11 +671,11 @@ function initSalnForm() {
                 <div class="form-row"><label>Description</label><input name="real_properties[${index}][description]" value="${data.description || ''}"></div>
                 <div class="form-row"><label>Kind</label><input name="real_properties[${index}][kind]" value="${data.kind || ''}"></div>
                 <div class="form-row"><label>Exact Location</label><input name="real_properties[${index}][exact_location]" value="${data.exact_location || ''}"></div>
-                <div class="form-row"><label>Assessed Value</label><input type="number" step="0.01" min="0" class="real-cost" name="real_properties[${index}][assessed_value]" value="${data.assessed_value || ''}"></div>
+                <div class="form-row"><label>Assessed Value</label><input type="number" step="0.01" min="0" name="real_properties[${index}][assessed_value]" value="${data.assessed_value || ''}"></div>
                 <div class="form-row"><label>Current Fair Market Value</label><input type="number" step="0.01" min="0" name="real_properties[${index}][current_fair_market_value]" value="${data.current_fair_market_value || ''}"></div>
-                <div class="form-row"><label>Year of Acquisition</label><input type="number" min="1900" max="2100" name="real_properties[${index}][year_of_acquisition]" value="${data.year_of_acquisition || ''}"></div>
+                <div class="form-row"><label>Year of Acquisition</label><input type="text" name="real_properties[${index}][year_of_acquisition]" value="${data.year_of_acquisition || ''}"></div>
                 <div class="form-row"><label>Mode of Acquisition</label><input name="real_properties[${index}][mode_of_acquisition]" value="${data.mode_of_acquisition || ''}"></div>
-                <div class="form-row"><label>Acquisition Cost</label><input type="number" step="0.01" min="0" name="real_properties[${index}][acquisition_cost]" value="${data.acquisition_cost || ''}"></div>
+                <div class="form-row"><label>Acquisition Cost</label><input type="number" step="0.01" min="0" class="real-cost" name="real_properties[${index}][acquisition_cost]" value="${data.acquisition_cost || ''}"></div>
                 
             </div>
         `
@@ -693,43 +693,18 @@ function initSalnForm() {
     wrapper.className = 'list-item personal-property-row'
 
     wrapper.innerHTML = `
-          <div class="two-column-grid dynamic-grid">
-              <div class="form-row">
-                  <label>Description</label>
-                  <input name="personal_properties[${index}][description]" value="${data.description || ''}">
-              </div>
-
-              <div class="form-row">
-                  <label>Acquisition Year</label>
-                  <input
-                    type="number"
-                    min="1900"
-                    max="2100"
-                    name="personal_properties[${index}][acquisition_year]"
-                    value="${data.acquisition_year || ''}"
-                  >
-              </div>
-
-              <div class="form-row">
-                  <label>Acquisition Cost / Amount</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    class="personal-cost"
-                    name="personal_properties[${index}][acquisition_cost_amount]"
-                    value="${data.acquisition_cost_amount || ''}"
-                  >
-              </div>
-          </div>
-      `
-
+            <div class="two-column-grid dynamic-grid">
+                <div class="form-row"><label>Description</label><input name="personal_properties[${index}][description]" value="${data.description || ''}"></div>
+                <div class="form-row"><label>Acquisition Year</label><input type="text" name="personal_properties[${index}][acquisition_year]" value="${data.acquisition_year || ''}"></div>
+                <div class="form-row"><label>Acquisition Cost / Amount</label><input type="number" step="0.01" min="0" class="personal-cost" name="personal_properties[${index}][acquisition_cost_amount]" value="${data.acquisition_cost_amount || ''}"></div>
+                ${ownerScopeField(`personal_properties[${index}][owner_scope]`, data.owner_scope)}
+            </div>
+        `
     const owner = document.createElement('div')
     owner.innerHTML = ownerScopeField(
       `personal_properties[${index}][owner_scope]`,
       data.owner_scope,
     )
-
     wrapper.appendChild(owner)
     wrapper.appendChild(createRemoveButton(wrapper))
     personalPropertiesContainer.appendChild(wrapper)
@@ -805,10 +780,7 @@ function initSalnForm() {
       `
 
     const owner = document.createElement('div')
-    owner.innerHTML = ownerScopeField(
-      `liabilities[${index}][owner_scope]`,
-      data.owner_scope,
-    )
+    owner.innerHTML = ownerScopeField(`liabilities[${index}][owner_scope]`, data.owner_scope)
 
     wrapper.appendChild(owner)
     wrapper.appendChild(createRemoveButton(wrapper))
