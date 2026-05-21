@@ -262,7 +262,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import salnApi from '../services/salnApi'
 import authAPI from '@/services/api'
-import { beforeRouteEnter, useRouter } from 'vue-router'
+import { onBeforeRouteUpdate, useRouter } from 'vue-router'
 
 const router = useRouter()
 const isDark = ref(false)
@@ -314,15 +314,6 @@ const form = reactive({
   liabilities: [],
 })
 
-const hasPrefetched = ref(false)
-
-function applyPrefetchedData(data) {
-  applyPayload(data)
-  hasPrefetched.value = true
-}
-
-defineExpose({ applyPrefetchedData })
-
 const initialDataEncoded = computed(() => {
   const payload = {
     additionalSpouses: form.additional_spouses,
@@ -343,27 +334,19 @@ async function loadFormData() {
   try {
     response = await salnApi.get('/saln')
   } catch (_error) {
-    return
+    return false
   }
 
   const payload = response.data || {}
   const data = payload.data || {}
 
   applyPayload(data)
+  return true
 }
 
-beforeRouteEnter(async (_to, _from, next) => {
-  try {
-    const response = await salnApi.get('/saln')
-    const payload = response.data || {}
-    const data = payload.data || {}
-
-    next((vm) => {
-      vm?.applyPrefetchedData?.(data)
-    })
-  } catch (_error) {
-    next(false)
-  }
+onBeforeRouteUpdate(async () => {
+  const loaded = await loadFormData()
+  return loaded
 })
 
 function applyPayload(data) {
@@ -721,7 +704,7 @@ function initSalnForm() {
                 <div class="form-row"><label>Year of Acquisition</label><input type="text" name="real_properties[${index}][year_of_acquisition]" value="${data.year_of_acquisition || ''}"></div>
                 <div class="form-row"><label>Mode of Acquisition</label><input name="real_properties[${index}][mode_of_acquisition]" value="${data.mode_of_acquisition || ''}"></div>
                 <div class="form-row"><label>Acquisition Cost</label><input type="number" step="0.01" min="0" class="real-cost" name="real_properties[${index}][acquisition_cost]" value="${data.acquisition_cost || ''}"></div>
-                
+
             </div>
         `
     const owner = document.createElement('div')
@@ -1255,9 +1238,7 @@ onMounted(async () => {
   const savedTheme = localStorage.getItem('theme') || 'light'
   applyTheme(savedTheme)
 
-  if (!hasPrefetched.value) {
-    await loadFormData()
-  }
+  await loadFormData()
   initSalnForm()
 })
 </script>
