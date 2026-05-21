@@ -19,6 +19,13 @@
           />
           <!-- ADD THIS RIGHT BEFORE </form> -->
         </form>
+        <button
+          type="button"
+          class="theme-toggle"
+          @click="toggleTheme"
+        >
+          {{ isDark ? '☀ Light' : '🌙 Dark' }}
+        </button>
         <button type="button" @click="logout">Logout</button>
       </div>
     </div>
@@ -256,12 +263,29 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import salnApi from '../services/salnApi'
 import authAPI from '@/services/api'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const isDark = ref(false)
+
+function applyTheme(theme) {
+  isDark.value = theme === 'dark'
+
+  if (theme === 'dark') {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+
+  localStorage.setItem('theme', theme)
+}
+
+function toggleTheme() {
+  applyTheme(isDark.value ? 'light' : 'dark')
+}
 
 const form = reactive({
   compliance_type: 'assumption',
@@ -1209,6 +1233,9 @@ function initSalnForm() {
 }
 
 onMounted(async () => {
+  const savedTheme = localStorage.getItem('theme') || 'light'
+  applyTheme(savedTheme)
+
   await loadFormData()
   initSalnForm()
 })
@@ -1736,6 +1763,173 @@ input[type='checkbox'] {
   .dynamic-grid {
     grid-template-columns: 1fr;
   }
+}
+/* THEME TOGGLE */
+
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+
+  border-radius: 12px;
+
+  border: 1px solid var(--border);
+
+  background: white;
+
+  color: var(--text-primary);
+
+  font-size: 1rem;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.theme-toggle:hover {
+  background: #1f2937;
+}
+
+/* DARK MODE */
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #111827;
+
+  --surface: #111827;
+  --surface-light: #1e293b;
+
+  --border: #334155;
+  --border-strong: #475569;
+
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+
+  --button-dark: #1e293b;
+
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.dark html,
+.dark body,
+.dark #app {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark #salnFormApp {
+  background:
+    radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(96,165,250,0.06), transparent 30%),
+    var(--bg-primary);
+}
+
+.dark .actions-header,
+.dark .section,
+.dark .list-item,
+.dark .compliance-option {
+  background: #111827;
+  border-color: #334155;
+}
+
+.dark .summary,
+.dark .inline label,
+.dark .owner-scope-checkbox {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  background: #0f172a;
+  border-color: #334155;
+  color: white;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+}
+
+.dark .section h2,
+.dark .actions-header h1,
+.dark .summary,
+.dark label,
+.dark p,
+.dark span,
+.dark div {
+  color: var(--text-primary);
+}
+
+.dark .section h3 {
+  color: #cbd5e1;
+}
+
+.dark .autosave-chip {
+  background: rgba(59,130,246,0.12);
+  border-color: rgba(59,130,246,0.25);
+  color: #93c5fd;
+}
+
+.dark button,
+.dark .btn-dark,
+.dark .save-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.dark button:hover,
+.dark .btn-dark:hover,
+.dark .save-btn:hover {
+  background: #1d4ed8;
+}
+
+.dark #addSpouseBtn,
+.dark #addChildBtn,
+.dark #addRealPropertyBtn,
+.dark #addPersonalPropertyBtn,
+.dark #addBusinessInterestBtn,
+.dark #addRelativeInGovernmentServiceBtn,
+.dark #addLiabilityBtn {
+  background: #1e293b;
+  border-color: #334155;
+  color: white;
+}
+
+.dark #addSpouseBtn:hover,
+.dark #addChildBtn:hover,
+.dark #addRealPropertyBtn:hover,
+.dark #addPersonalPropertyBtn:hover,
+.dark #addBusinessInterestBtn:hover,
+.dark #addRelativeInGovernmentServiceBtn:hover,
+.dark #addLiabilityBtn:hover {
+  background: #334155;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0f172a;
 }
 </style>
 ```

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import authAPI from '@/services/api'
 import { useRouter } from 'vue-router'
 
@@ -11,6 +11,25 @@ const email = ref('')
 const send_code_error = ref('')
 const otpCode = ref('')
 const otpError = ref('')
+const isDark = ref(false)
+
+function applyTheme(theme) {
+  const root = document.documentElement
+
+  if (theme === 'dark') {
+    root.classList.add('dark')
+    isDark.value = true
+  } else {
+    root.classList.remove('dark')
+    isDark.value = false
+  }
+
+  localStorage.setItem('theme', theme)
+}
+
+function toggleThemeMode() {
+  applyTheme(isDark.value ? 'light' : 'dark')
+}
 
 function toggle() {
   showModal.value = !showModal.value
@@ -51,6 +70,11 @@ async function verifyCode() {
       error.response?.data?.message || 'Verification failed.'
   }
 }
+
+onMounted(() => {
+  const savedTheme = localStorage.getItem('theme') || 'light'
+  applyTheme(savedTheme)
+})
 </script>
 
 <template>
@@ -63,6 +87,14 @@ async function verifyCode() {
     <!-- TOPBAR -->
     <header class="topbar">
       <div class="brand">
+        <button
+          type="button"
+          class="theme-toggle"
+          @click="toggleThemeMode"
+        >
+          {{ isDark ? '☀️ Light' : '🌙 Dark' }}
+      </button>
+        
         <div class="brand-badge">
           <img src="/favicon.ico" alt="SALN Logo" class="brand-logo" />
         </div>
@@ -72,7 +104,9 @@ async function verifyCode() {
             Statement of Assets, Liabilities, and Net Worth
           </div>
         </div>
+        
       </div>
+      
     </header>
 
     <!-- MAIN -->
@@ -276,8 +310,8 @@ async function verifyCode() {
   --bg-primary: #f4f6f8;
   --bg-secondary: #eef1f4;
 
-  --surface: #ffffff;
-  --surface-light: #fafbfc;
+  --surface: #111827;
+  --surface-light: #1f2937;
 
   --border: #d7dde5;
   --border-strong: #b8c2cc;
@@ -350,7 +384,6 @@ body {
 }
 
 /* TOPBAR */
-
 .topbar {
   width: 100%;
 
@@ -361,6 +394,12 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
+
+  padding: 18px 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 
@@ -846,5 +885,214 @@ input:focus {
 
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
+}
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+
+  border-radius: 12px;
+
+  border: 1px solid var(--border);
+
+  background: white;
+
+  color: var(--text-primary);
+
+  font-size: 1rem;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-1px);
+
+  background: #f3f4f6;
+}
+.dark {
+  --bg-primary: #0b1120;
+  --bg-secondary: #111827;
+
+  --surface: #111827;
+  --surface-light: #1f2937;
+
+  --border: #263244;
+  --border-strong: #334155;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+
+  --shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+
+/* PAGE */
+
+.dark body,
+.dark #app,
+.dark .page {
+  background: #0b1120;
+  color: var(--text-primary);
+}
+
+.dark .page {
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 28%),
+    linear-gradient(to bottom, #0b1120, #111827);
+}
+
+/* TOPBAR */
+
+.dark .topbar {
+  background: rgba(11, 17, 32, 0.85);
+
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid var(--border);
+}
+
+/* CARDS */
+
+.dark .login-card,
+.dark .modal {
+  background: #111827;
+
+  border: 1px solid #253046;
+
+  box-shadow: var(--shadow);
+}
+
+/* TEXT */
+
+.dark .subtitle,
+.dark .info-card p,
+.dark .login-header p,
+.dark .modal-text,
+.dark .login-footer {
+  color: var(--text-secondary);
+}
+
+.dark label {
+  color: #dbe4f0;
+}
+
+/* INPUTS */
+
+.dark input {
+  background: #0f172a;
+
+  border: 1px solid var(--border);
+
+  color: var(--text-primary);
+}
+
+.dark input::placeholder {
+  color: var(--text-muted);
+}
+
+.dark input:focus {
+  border-color: var(--accent);
+
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+/* BUTTONS */
+
+.dark .primary-btn {
+  background: var(--accent);
+}
+
+.dark .primary-btn:hover {
+  background: var(--accent-hover);
+}
+
+
+.dark .theme-toggle,
+.dark .close-btn {
+  background: var(--surface-light);
+
+  border: 1px solid var(--border);
+
+  color: var(--text-primary);
+}
+
+.dark .theme-toggle:hover,
+.dark .close-btn:hover {
+  background: #243244;
+}
+
+/* STATUS */
+
+.dark .status {
+  background: rgba(37, 99, 235, 0.12);
+
+  border: 1px solid rgba(37, 99, 235, 0.25);
+
+  color: #bfdbfe;
+}
+
+.dark .modal-chip {
+  background: rgba(37, 99, 235, 0.12);
+
+  border: 1px solid rgba(37, 99, 235, 0.25);
+
+  color: #bfdbfe;
+}
+
+/* SCROLLBAR */
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0b1120;
+}
+
+.dark .title,
+.dark .login-header h2,
+.dark .modal-header h2,
+.dark .brand-title,
+.dark .info-card h3 {
+  color: #ffffff;
+}
+
+.dark .subtitle {
+  color: #dbe4f0;
+}
+
+.dark .info-card p,
+.dark .login-header p,
+.dark .modal-text,
+.dark .login-footer {
+  color: #b8c4d6;
+}
+
+.dark .info-card {
+  background: #111827;
+
+  border: 1px solid #253046;
+
+  color: white;
+}
+
+.dark .info-card h3 {
+  color: #ffffff;
+}
+
+.dark .info-card p {
+  color: #cbd5e1;
 }
 </style>
