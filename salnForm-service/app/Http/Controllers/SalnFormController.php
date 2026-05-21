@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 
 class SalnFormController extends Controller
 {
-    public function edit(Request $request): JsonResponse
+    public function edit(): JsonResponse
     {
         $salnForm = $this->findSalnForm($this->userIdFromAuth());
 
@@ -19,7 +19,7 @@ class SalnFormController extends Controller
         ]);
     }
 
-    public function export(Request $request): JsonResponse
+    public function export(): JsonResponse
     {
         $salnForm = $this->findSalnForm($this->userIdFromAuth());
 
@@ -70,7 +70,7 @@ class SalnFormController extends Controller
         ]);
     }
 
-    public function draft(Request $request): JsonResponse
+    public function update(Request $request): JsonResponse
     {
         $normalized = $this->normalizeDraftPayload($request->all());
         $validated = Validator::make($normalized, $this->rules(true))->validate();
@@ -79,20 +79,6 @@ class SalnFormController extends Controller
 
         return response()->json([
             'status' => 'saved',
-        ]);
-    }
-
-    public function update(Request $request): JsonResponse
-    {
-        $validated = Validator::make($request->all(), $this->rules())->validate();
-
-        $userId = $this->userIdFromAuth();
-        $this->storePayload($userId, $validated);
-        $salnForm = $this->findSalnForm($userId);
-
-        return response()->json([
-            'message' => 'SALN form saved successfully.',
-            'data' => $this->exportPayload($salnForm),
         ]);
     }
 

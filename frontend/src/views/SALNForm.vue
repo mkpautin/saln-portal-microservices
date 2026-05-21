@@ -26,13 +26,7 @@
       </div>
     </div>
 
-    <form
-      id="salnSaveForm"
-      method="POST"
-      action="/api/saln"
-      data-draft-url="/api/saln/draft"
-      data-pdf-url="/api/saln/pdf"
-    >
+    <form id="salnSaveForm" method="POST" action="/api/saln/update">
       <div class="section">
         <h2>Compliance for</h2>
         <div class="compliance-option" data-compliance-option="assumption">
@@ -250,9 +244,7 @@
         <button type="button" id="addRelativeInGovernmentServiceBtn">Add Relative</button>
       </div>
       <div class="save-button-container">
-        <button type="button" id="manualSaveBtn" class="save-btn" @submit="persistDraft">
-          Save SALN
-        </button>
+        <button type="button" id="manualSaveBtn" class="save-btn">Save SALN</button>
       </div>
     </form>
   </div>
@@ -332,7 +324,7 @@ async function loadFormData() {
   let response
 
   try {
-    response = await salnApi.get('/saln')
+    response = await salnApi.get('/data')
   } catch (_error) {
     return false
   }
@@ -463,20 +455,6 @@ function initSalnForm() {
   }
 
   const saveForm = document.getElementById('salnSaveForm')
-  const draftUrl = toSalnPath(saveForm?.dataset?.draftUrl || '/saln/draft')
-  const pdfUrl = toSalnPath(saveForm?.dataset?.pdfUrl || '/saln/pdf')
-  function toSalnPath(url) {
-    if (!url) {
-      return ''
-    }
-
-    try {
-      const parsed = new URL(url)
-      return parsed.pathname.replace(/^\/api/, '')
-    } catch (_error) {
-      return url.replace(/^\/api/, '')
-    }
-  }
 
   const initialDataInput = document.getElementById('saln-initial-data')
   const importButton = document.getElementById('salnImportButton')
@@ -603,7 +581,7 @@ function initSalnForm() {
     button.addEventListener('click', function () {
       wrapper.remove()
       updateTotals()
-      scheduleDraftSave()
+      scheduleUpdateSave()
     })
     return button
   }
@@ -859,7 +837,7 @@ function initSalnForm() {
     })
   }
 
-  function createDraftRequestBody() {
+  function createUpdateRequestBody() {
     const formData = new FormData(saveForm)
 
     if (!saveForm) {
@@ -887,7 +865,7 @@ function initSalnForm() {
     return formData
   }
 
-  function createDraftSignature() {
+  function createUpdateSignature() {
     if (!saveForm) {
       return ''
     }
@@ -895,10 +873,10 @@ function initSalnForm() {
     return JSON.stringify(Array.from(new FormData(saveForm).entries()))
   }
 
-  let draftTimer = null
-  let draftInFlight = null
-  let draftRequestSeq = 0
-  let lastSavedDraftSignature = ''
+  let updateTimer = null
+  let updateInFlight = null
+  let updateRequestSeq = 0
+  let lastSavedUpdateSignature = ''
 
   function setAutosaveState(state, message) {
     if (!autosaveStatus) {
@@ -923,82 +901,82 @@ function initSalnForm() {
     return `Saved at ${time}`
   }
 
-  function persistDraft() {
+  function persistUpdate() {
     if (!saveForm) {
       return Promise.resolve()
     }
 
-    if (draftInFlight) {
-      const activeRequest = draftInFlight
+    if (updateInFlight) {
+      const activeRequest = updateInFlight
 
       return activeRequest.then(function () {
-        return persistDraft()
+        return persistUpdate()
       })
     }
 
-    const draftSignature = createDraftSignature()
+    const updateSignature = createUpdateSignature()
 
-    if (draftSignature === lastSavedDraftSignature) {
+    if (updateSignature === lastSavedUpdateSignature) {
       return Promise.resolve(true)
     }
 
-    const requestSeq = ++draftRequestSeq
+    const requestSeq = ++updateRequestSeq
     setAutosaveState('saving', 'Saving...')
 
-    const body = createDraftRequestBody()
+    const body = createUpdateRequestBody()
     const request = salnApi
-      .post(draftUrl, body, {
+      .post('/update', body, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
       .then(function () {
-        if (requestSeq === draftRequestSeq) {
-          lastSavedDraftSignature = draftSignature
+        if (requestSeq === updateRequestSeq) {
+          lastSavedUpdateSignature = updateSignature
           setAutosaveState('saved', savedAtMessage())
         }
 
         return true
       })
       .catch(function () {
-        if (requestSeq === draftRequestSeq) {
+        if (requestSeq === updateRequestSeq) {
           setAutosaveState('error', 'Autosave failed. Continuing to retry.')
         }
 
         return null
       })
       .finally(function () {
-        if (draftInFlight === request) {
-          draftInFlight = null
+        if (updateInFlight === request) {
+          updateInFlight = null
         }
       })
 
-    draftInFlight = request
+    updateInFlight = request
     return request
   }
 
-  function scheduleDraftSave() {
-    const draftSignature = createDraftSignature()
+  function scheduleUpdateSave() {
+    const updateSignature = createUpdateSignature()
 
-    if (draftSignature === lastSavedDraftSignature) {
-      if (draftTimer) {
-        window.clearTimeout(draftTimer)
-        draftTimer = null
+    if (updateSignature === lastSavedUpdateSignature) {
+      if (updateTimer) {
+        window.clearTimeout(updateTimer)
+        updateTimer = null
       }
 
       setAutosaveState('saved', 'All changes saved')
       return
     }
 
-    if (draftTimer) {
-      window.clearTimeout(draftTimer)
+    if (updateTimer) {
+      window.clearTimeout(updateTimer)
     }
 
     setAutosaveState('dirty', 'Unsaved changes')
 
-    draftTimer = window.setTimeout(function () {
-      draftTimer = null
-      persistDraft()
+    updateTimer = window.setTimeout(function () {
+      updateTimer = null
+      persistUpdate()
     }, 500)
   }
 
@@ -1038,16 +1016,16 @@ function initSalnForm() {
     }
 
     try {
-      if (draftTimer) {
-        window.clearTimeout(draftTimer)
-        draftTimer = null
+      if (updateTimer) {
+        window.clearTimeout(updateTimer)
+        updateTimer = null
       }
 
-      if (draftInFlight) {
-        await draftInFlight
+      if (updateInFlight) {
+        await updateInFlight
       }
 
-      const saved = await persistDraft()
+      const saved = await persistUpdate()
       if (!saved) {
         throw new Error('Autosave failed. Please try again before generating PDF.')
       }
@@ -1057,7 +1035,7 @@ function initSalnForm() {
       let payload
 
       try {
-        const response = await salnApi.post(pdfUrl, createDraftRequestBody(), {
+        const response = await salnApi.post('/pdf', createUpdateRequestBody(), {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -1085,7 +1063,7 @@ function initSalnForm() {
     }
   }
   document.getElementById('manualSaveBtn').addEventListener('click', function () {
-    void persistDraft()
+    void persistUpdate()
   })
   document.getElementById('addSpouseBtn').addEventListener('click', function () {
     addAdditionalSpouseRow()
@@ -1096,27 +1074,27 @@ function initSalnForm() {
   document.getElementById('addRealPropertyBtn').addEventListener('click', function () {
     addRealPropertyRow()
     updateTotals()
-    scheduleDraftSave()
+    scheduleUpdateSave()
   })
   document.getElementById('addPersonalPropertyBtn').addEventListener('click', function () {
     addPersonalPropertyRow()
     updateTotals()
-    scheduleDraftSave()
+    scheduleUpdateSave()
   })
   document.getElementById('addBusinessInterestBtn').addEventListener('click', function () {
     addBusinessInterestRow()
-    scheduleDraftSave()
+    scheduleUpdateSave()
   })
   document
     .getElementById('addRelativeInGovernmentServiceBtn')
     .addEventListener('click', function () {
       addRelativeInGovernmentServiceRow()
-      scheduleDraftSave()
+      scheduleUpdateSave()
     })
   document.getElementById('addLiabilityBtn').addEventListener('click', function () {
     addLiabilityRow()
     updateTotals()
-    scheduleDraftSave()
+    scheduleUpdateSave()
   })
 
   document.addEventListener('input', function (event) {
@@ -1129,13 +1107,13 @@ function initSalnForm() {
     }
 
     if (event.target.closest('#salnSaveForm')) {
-      scheduleDraftSave()
+      scheduleUpdateSave()
     }
   })
 
   document.addEventListener('change', function (event) {
     if (event.target.closest('#salnSaveForm')) {
-      scheduleDraftSave()
+      scheduleUpdateSave()
     }
   })
 
@@ -1161,7 +1139,7 @@ function initSalnForm() {
       setAutosaveState('saving', 'Importing JSON...')
 
       salnApi
-        .post('/saln/import', payload, {
+        .post('/import', payload, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -1174,7 +1152,7 @@ function initSalnForm() {
           rebuildRowsFromForm()
           updateComplianceInputs()
           updateTotals()
-          lastSavedDraftSignature = createDraftSignature()
+          lastSavedUpdateSignature = createUpdateSignature()
           setAutosaveState('saved', 'SALN JSON imported successfully.')
         })
         .catch((error) => {
@@ -1218,19 +1196,19 @@ function initSalnForm() {
 
   updateComplianceInputs()
   updateTotals()
-  lastSavedDraftSignature = createDraftSignature()
+  lastSavedUpdateSignature = createUpdateSignature()
 
   document.addEventListener('pagehide', function () {
-    if (draftTimer) {
-      window.clearTimeout(draftTimer)
-      draftTimer = null
+    if (updateTimer) {
+      window.clearTimeout(updateTimer)
+      updateTimer = null
     }
 
-    if (draftInFlight) {
+    if (updateInFlight) {
       return
     }
 
-    void persistDraft()
+    void persistUpdate()
   })
 }
 
