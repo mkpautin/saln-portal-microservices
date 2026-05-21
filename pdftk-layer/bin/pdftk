@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /opt/java/bin/java -jar /opt/lib/pdftk-all.jar "$@"

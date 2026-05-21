@@ -1,71 +1,83 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SALN Form Service
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+SALN form API and PDF generation service for SALN Portal. Built with Laravel, PostgreSQL, and deployed on AWS using Bref Serverless.
 
-## About Laravel
+## Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Serves SALN form API routes under `/api/saln` in the serverless configuration.
+- Generates PDFs in AWS Lambda and returns pre-signed S3 URLs.
+- Uses a fillable PDF template stored in the service repository.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Local Development
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## SALN PDF generation on AWS
-
-The SALN PDF endpoint is Lambda-friendly: generated files are built under the system temp directory, uploaded to a private S3 bucket, and returned to the frontend as a 10-minute pre-signed URL.
-
-Required deployment settings:
-
-- `SALN_PDF_S3_BUCKET`: private S3 bucket for generated PDFs.
-- `SALN_PDF_S3_PREFIX`: object prefix, defaults to `saln-pdf`.
-- `SALN_PDF_URL_TTL_MINUTES`: pre-signed URL lifetime, defaults to `10`.
-- `PDFTK_BINARY`: path to the Lambda-compatible `pdftk` binary when it is not available as `pdftk`.
-
-The Lambda role needs `s3:PutObject` and `s3:GetObject` on the PDF bucket. Add an S3 lifecycle rule if generated PDFs should be removed automatically after the pre-signed URL expires. The PDF template must be included in the deployment at `storage/app/pdf-templates/saln_fillable_form.pdf`.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Create your environment file:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+cp .env.example .env
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Optional: start the local Postgres container:
 
-## Contributing
+```bash
+docker compose up -d
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Install dependencies and initialize:
 
-## Code of Conduct
+```bash
+composer run setup
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Start the development stack:
 
-## Security Vulnerabilities
+```bash
+composer run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Run tests:
 
-## License
+```bash
+composer run test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Artisan Commands
+
+Database migrations (ensure the database is running and your `DB_*` values are correct):
+
+```bash
+php artisan migrate
+php artisan migrate:status
+```
+
+Configuration and optimization helpers:
+
+```bash
+php artisan config:clear
+php artisan config:cache
+php artisan route:cache
+php artisan event:cache
+php artisan optimize
+php artisan optimize:clear
+```
+
+Use `optimize` for production or when you want cached config/routes/events for performance. Use `optimize:clear` during local development or after changing `.env` or routes to avoid stale caches.
+
+## Configuration
+
+- Local environment template: [salnForm-service/.env.example](salnForm-service/.env.example)
+- Deployment config: [salnForm-service/serverless.yml](salnForm-service/serverless.yml)
+- Local Postgres compose: [salnForm-service/docker-compose.yml](salnForm-service/docker-compose.yml)
+
+PDF generation settings:
+
+- `SALN_PDF_DISK`
+- `SALN_PDF_S3_BUCKET`
+- `SALN_PDF_S3_PREFIX`
+- `SALN_PDF_URL_TTL_MINUTES`
+- `PDFTK_BINARY`
+
+PDF template file:
+
+- [salnForm-service/storage/app/pdf-templates/saln_fillable_form.pdf](salnForm-service/storage/app/pdf-templates/saln_fillable_form.pdf)
+
+AWS permissions: the Lambda role needs `s3:PutObject` and `s3:GetObject` for the PDF bucket.

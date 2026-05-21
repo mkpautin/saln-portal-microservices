@@ -1,44 +1,43 @@
-# frontend
+# Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3 application for SALN Portal, built with Vite. It connects to the authentication and SALN form APIs through environment-configured base URLs.
 
-## Recommended IDE Setup
+## Local Development
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Install dependencies:
 
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 pnpm install
 ```
 
-### Compile and Hot-Reload for Development
+Create your environment file:
 
-```sh
+```bash
+cp .env.example .env
+```
+
+Start the dev server:
+
+```bash
 pnpm dev
 ```
 
-### Compile and Minify for Production
+## Scripts
 
-```sh
+```bash
 pnpm build
+pnpm preview
+pnpm lint
+pnpm format
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Configuration
 
-```sh
-pnpm lint
+- Environment template: [frontend/.env.example](frontend/.env.example)
+
+Required environment variables:
+
+```bash
+VITE_AUTH_API_URL=
+VITE_SALN_API_URL=
 ```
