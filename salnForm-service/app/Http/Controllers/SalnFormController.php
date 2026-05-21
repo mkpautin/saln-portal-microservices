@@ -72,7 +72,7 @@ class SalnFormController extends Controller
 
     public function update(Request $request): JsonResponse
     {
-        $normalized = $this->normalizeDraftPayload($request->all());
+        $normalized = $this->normalizeFormPayload($request->all());
         $validated = Validator::make($normalized, $this->rules(true))->validate();
 
         $this->storePayload($this->userIdFromAuth(), $validated);
@@ -82,16 +82,16 @@ class SalnFormController extends Controller
         ]);
     }
 
-    private function rules(bool $draft = false): array
+    private function rules(bool $form = false): array
     {
         $currentYear = (int) now()->format('Y');
-        $complianceTypeRules = $draft ? ['nullable', 'in:assumption,annual,exit'] : ['required', 'in:assumption,annual,exit'];
-        $assumptionRules = $draft ? ['nullable', 'date'] : ['nullable', 'date', 'required_if:compliance_type,assumption'];
-        $annualRules = $draft ? ['nullable', 'integer', 'between:1900,'.($currentYear + 1)] : ['nullable', 'integer', 'between:1900,'.($currentYear + 1), 'required_if:compliance_type,annual'];
-        $exitRules = $draft ? ['nullable', 'date'] : ['nullable', 'date', 'required_if:compliance_type,exit'];
-        $requiredTextRules = $draft ? ['nullable', 'string', 'max:255'] : ['required', 'string', 'max:255'];
-        $requiredAddressRules = $draft ? ['nullable', 'string', 'max:500'] : ['required', 'string', 'max:500'];
-        $filingTypeRules = $draft ? ['nullable', 'in:joint,separate,not_applicable'] : ['required', 'in:joint,separate,not_applicable'];
+        $complianceTypeRules = $form ? ['nullable', 'in:assumption,annual,exit'] : ['required', 'in:assumption,annual,exit'];
+        $assumptionRules = $form ? ['nullable', 'date'] : ['nullable', 'date', 'required_if:compliance_type,assumption'];
+        $annualRules = $form ? ['nullable', 'integer', 'between:1900,'.($currentYear + 1)] : ['nullable', 'integer', 'between:1900,'.($currentYear + 1), 'required_if:compliance_type,annual'];
+        $exitRules = $form ? ['nullable', 'date'] : ['nullable', 'date', 'required_if:compliance_type,exit'];
+        $requiredTextRules = $form ? ['nullable', 'string', 'max:255'] : ['required', 'string', 'max:255'];
+        $requiredAddressRules = $form ? ['nullable', 'string', 'max:500'] : ['required', 'string', 'max:500'];
+        $filingTypeRules = $form ? ['nullable', 'in:joint,separate,not_applicable'] : ['required', 'in:joint,separate,not_applicable'];
 
         return [
             'compliance_type' => $complianceTypeRules,
@@ -313,7 +313,7 @@ class SalnFormController extends Controller
         return $value;
     }
 
-    private function normalizeDraftPayload(array $payload): array
+    private function normalizeFormPayload(array $payload): array
     {
         $normalized = [];
 

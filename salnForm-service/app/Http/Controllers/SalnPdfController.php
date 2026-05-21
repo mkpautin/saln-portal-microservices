@@ -23,7 +23,7 @@ class SalnPdfController extends Controller
      */
     public function generate(Request $request): JsonResponse
     {
-        $this->persistDraftFromRequest($request);
+        $this->persistUpdateFromRequest($request);
 
         $userId = $this->userIdFromAuth();
         $salnForm = $this->findSalnForm($userId);
@@ -86,13 +86,13 @@ class SalnPdfController extends Controller
         return;
     }
 
-    private function persistDraftFromRequest(Request $request): void
+    private function persistUpdateFromRequest(Request $request): void
     {
         if (! $this->containsSalnPayload($request)) {
             return;
         }
 
-        app(SalnFormController::class)->draft($request);
+        app(SalnFormController::class)->update($request);
     }
 
     private function userIdFromAuth(): int
