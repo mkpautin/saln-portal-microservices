@@ -19,11 +19,7 @@
           />
           <!-- ADD THIS RIGHT BEFORE </form> -->
         </form>
-        <button
-          type="button"
-          class="theme-float-btn"
-          @click="toggleTheme"
-        >
+        <button type="button" class="theme-float-btn" @click="toggleTheme">
           {{ isDark ? '☀ Light' : '🌙 Dark' }}
         </button>
         <button type="button" @click="logout">Logout</button>
@@ -266,7 +262,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import salnApi from '../services/salnApi'
 import authAPI from '@/services/api'
-import { useRouter } from 'vue-router'
+import { onBeforeRouteEnter, useRouter } from 'vue-router'
 
 const router = useRouter()
 const isDark = ref(false)
@@ -318,6 +314,15 @@ const form = reactive({
   liabilities: [],
 })
 
+const hasPrefetched = ref(false)
+
+function applyPrefetchedData(data) {
+  applyPayload(data)
+  hasPrefetched.value = true
+}
+
+defineExpose({ applyPrefetchedData })
+
 const initialDataEncoded = computed(() => {
   const payload = {
     additionalSpouses: form.additional_spouses,
@@ -346,6 +351,20 @@ async function loadFormData() {
 
   applyPayload(data)
 }
+
+onBeforeRouteEnter(async (_to, _from, next) => {
+  try {
+    const response = await salnApi.get('/saln')
+    const payload = response.data || {}
+    const data = payload.data || {}
+
+    next((vm) => {
+      vm?.applyPrefetchedData?.(data)
+    })
+  } catch (_error) {
+    next(false)
+  }
+})
 
 function applyPayload(data) {
   const payload = data || {}
@@ -432,7 +451,7 @@ async function logout() {
 
     if (response.status === 200) {
       localStorage.removeItem('access_token')
-      router.replace({ path: '/' })
+      router.replace({ path: '/login' })
     }
   } catch (error) {
     console.error(error)
@@ -1236,7 +1255,9 @@ onMounted(async () => {
   const savedTheme = localStorage.getItem('theme') || 'light'
   applyTheme(savedTheme)
 
-  await loadFormData()
+  if (!hasPrefetched.value) {
+    await loadFormData()
+  }
   initSalnForm()
 })
 </script>
@@ -1862,7 +1883,6 @@ input[type='checkbox'] {
   }
 }
 
-
 /* DARK MODE */
 
 .dark {
@@ -1896,8 +1916,8 @@ input[type='checkbox'] {
 
 .dark #salnFormApp {
   background:
-    radial-gradient(circle at top left, rgba(59,130,246,0.08), transparent 30%),
-    radial-gradient(circle at bottom right, rgba(96,165,250,0.06), transparent 30%),
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.08), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(96, 165, 250, 0.06), transparent 30%),
     var(--bg-primary);
 }
 
@@ -1933,7 +1953,7 @@ input[type='checkbox'] {
 .dark textarea:focus,
 .dark select:focus {
   border-color: #60a5fa;
-  box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
 .dark .section h2,
@@ -1951,8 +1971,8 @@ input[type='checkbox'] {
 }
 
 .dark .autosave-chip {
-  background: rgba(59,130,246,0.12);
-  border-color: rgba(59,130,246,0.25);
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.25);
   color: #93c5fd;
 }
 

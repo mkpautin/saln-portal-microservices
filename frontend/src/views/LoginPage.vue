@@ -46,8 +46,7 @@ async function sendCode() {
     showModal.value = response.data.otp_sent
     status.value = response.data.status
   } catch (error) {
-    send_code_error.value =
-      error.response?.data?.message || 'Unable to send verification code.'
+    send_code_error.value = error.response?.data?.message || 'Unable to send verification code.'
   }
 }
 
@@ -66,20 +65,24 @@ async function verifyCode() {
       router.replace({ path: '/saln' })
     }
   } catch (error) {
-    otpError.value =
-      error.response?.data?.message || 'Verification failed.'
+    otpError.value = error.response?.data?.message || 'Verification failed.'
   }
 }
 
 onMounted(() => {
   const savedTheme = localStorage.getItem('theme') || 'light'
   applyTheme(savedTheme)
+
+  const loginStatus = localStorage.getItem('login_status')
+  if (loginStatus) {
+    status.value = loginStatus
+    localStorage.removeItem('login_status')
+  }
 })
 </script>
 
 <template>
   <div class="page">
-
     <!-- BACKGROUND GLOW -->
     <div class="bg-glow glow-1"></div>
     <div class="bg-glow glow-2"></div>
@@ -87,46 +90,32 @@ onMounted(() => {
     <!-- TOPBAR -->
     <header class="topbar">
       <div class="brand">
-        <button
-          type="button"
-          class="theme-toggle"
-          @click="toggleThemeMode"
-        >
+        <button type="button" class="theme-toggle" @click="toggleThemeMode">
           {{ isDark ? '☀️' : '🌙' }}
-      </button>
-        
+        </button>
+
         <div class="brand-badge">
           <img src="/favicon.ico" alt="SALN Logo" class="brand-logo" />
         </div>
 
         <div>
-          <div class="brand-title">
-            Statement of Assets, Liabilities, and Net Worth
-          </div>
+          <div class="brand-title">Statement of Assets, Liabilities, and Net Worth</div>
         </div>
-        
       </div>
-      
     </header>
 
     <!-- MAIN -->
     <main class="hero">
-
       <!-- LEFT CONTENT -->
       <section class="hero-left">
-
-        <h1 class="title">
-          Secure SALN Filing Portal
-        </h1>
+        <h1 class="title">Secure SALN Filing Portal</h1>
 
         <p class="subtitle">
-          Efficiently create, update, organize, and generate official
-          Statement of Assets, Liabilities, and Net Worth (SALN)
-          documents through a secure digital filing platform designed
-          for government personnel.
+          Efficiently create, update, organize, and generate official Statement of Assets,
+          Liabilities, and Net Worth (SALN) documents through a secure digital filing platform
+          designed for government personnel.
         </p>
         <div class="info-grid">
-
           <div class="info-card">
             <div class="info-icon"></div>
 
@@ -134,8 +123,7 @@ onMounted(() => {
               <h3>Secure Authentication</h3>
 
               <p>
-                Email-based OTP verification for secure login and
-                protected document management.
+                Email-based OTP verification for secure login and protected document management.
               </p>
             </div>
           </div>
@@ -147,8 +135,8 @@ onMounted(() => {
               <h3>Digital SALN Filing</h3>
 
               <p>
-                Create, edit, organize, export, import, and generate
-                official SALN PDF documents online.
+                Create, edit, organize, export, import, and generate official SALN PDF documents
+                online.
               </p>
             </div>
           </div>
@@ -160,8 +148,8 @@ onMounted(() => {
               <h3>Autosave Drafts</h3>
 
               <p>
-                Your progress is continuously saved so your filing remains safe
-                even during interruptions.
+                Your progress is continuously saved so your filing remains safe even during
+                interruptions.
               </p>
             </div>
           </div>
@@ -172,29 +160,19 @@ onMounted(() => {
             <div>
               <h3>Protected Access</h3>
 
-              <p>
-                Built with secure API authentication and encrypted verification
-                workflows.
-              </p>
+              <p>Built with secure API authentication and encrypted verification workflows.</p>
             </div>
           </div>
-
         </div>
       </section>
 
       <!-- LOGIN CARD -->
       <section class="hero-right">
-
         <div class="login-card">
-
           <div class="login-header">
-
             <h2>Login to Continue</h2>
 
-            <p>
-              Enter your email address to receive a 6-digit
-              verification code.
-            </p>
+            <p>Enter your email address to receive a 6-digit verification code.</p>
           </div>
 
           <div v-if="status" class="status">
@@ -202,7 +180,6 @@ onMounted(() => {
           </div>
 
           <form @submit.prevent="sendCode">
-
             <div class="form-row">
               <label for="email">Registered Email</label>
 
@@ -220,40 +197,24 @@ onMounted(() => {
               </div>
             </div>
 
-            <button type="submit" class="primary-btn">
-              Send Verification Code
-            </button>
-
+            <button type="submit" class="primary-btn">Send Verification Code</button>
           </form>
 
           <div class="login-footer">
-            Accounts inactive for more than 5 days may be automatically
-            deleted from the system for storage management and security
-            purposes.
+            Accounts inactive for more than 5 days may be automatically deleted from the system for
+            storage management and security purposes.
           </div>
-
         </div>
-
       </section>
-
     </main>
 
     <!-- OTP MODAL -->
 
-    <div
-      id="verifyModal"
-      class="modal-overlay"
-      :aria-hidden="!showModal"
-      v-if="showModal"
-    >
+    <div id="verifyModal" class="modal-overlay" :aria-hidden="!showModal" v-if="showModal">
       <div class="modal">
-
         <div class="modal-header">
-
           <div>
-            <div class="modal-chip">
-              Verification Required
-            </div>
+            <div class="modal-chip">Verification Required</div>
 
             <h2>Enter Verification Code</h2>
           </div>
@@ -266,15 +227,11 @@ onMounted(() => {
           >
             ✕
           </button>
-
         </div>
 
-        <p class="modal-text">
-          A 6-digit verification code has been sent to your email address.
-        </p>
+        <p class="modal-text">A 6-digit verification code has been sent to your email address.</p>
 
         <form @submit.prevent="verifyCode">
-
           <div class="form-row">
             <label for="code">Verification Code</label>
 
@@ -294,15 +251,10 @@ onMounted(() => {
             </div>
           </div>
 
-          <button type="submit" class="primary-btn">
-            Verify and Login
-          </button>
-
+          <button type="submit" class="primary-btn">Verify and Login</button>
         </form>
-
       </div>
     </div>
-
   </div>
 </template>
 <style>
@@ -343,10 +295,7 @@ body,
   width: 100%;
   min-height: 100%;
 
-  font-family:
-    Inter,
-    'Segoe UI',
-    sans-serif;
+  font-family: Inter, 'Segoe UI', sans-serif;
 
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -360,12 +309,7 @@ body {
   width: 100%;
   min-height: 100vh;
   position: relative;
-  background:
-    linear-gradient(
-      to bottom,
-      #f8fafc,
-      #f1f5f9
-    );
+  background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
 }
 .container {
   width: 100%;
@@ -402,8 +346,6 @@ body {
   justify-content: space-between;
 }
 
-
-
 .brand {
   display: flex;
   align-items: center;
@@ -425,7 +367,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
 
   background: white;
 
@@ -535,7 +476,6 @@ body {
 
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
-
 
 .info-card p {
   margin: 0;
@@ -752,8 +692,7 @@ input:focus {
 
   padding: 28px;
 
-  box-shadow:
-    0 20px 40px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
 }
 
 .modal-header {
@@ -853,7 +792,6 @@ input:focus {
     padding: 16px 18px;
   }
 
-
   .hero {
     padding: 20px;
   }
@@ -915,8 +853,7 @@ input:focus {
   align-items: center;
   justify-content: center;
 
-  box-shadow:
-    0 10px 25px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
 
   transition:
     background 0.15s ease,
@@ -930,8 +867,7 @@ input:focus {
 
   background: white;
 
-  box-shadow:
-    0 14px 30px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
 }
 
 /* DARK MODE */
@@ -943,8 +879,7 @@ input:focus {
 
   color: white;
 
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 .dark .theme-toggle:hover {
@@ -981,7 +916,6 @@ input:focus {
 
   --shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
-
 
 /* PAGE */
 
@@ -1062,7 +996,6 @@ input:focus {
 .dark .primary-btn:hover {
   background: var(--accent-hover);
 }
-
 
 .dark .theme-toggle,
 .dark .close-btn {

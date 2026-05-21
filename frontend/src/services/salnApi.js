@@ -20,4 +20,26 @@ salnApi.interceptors.request.use((config) => {
   return config
 })
 
+salnApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error?.response?.status
+    const message = error?.response?.data?.message
+
+    if (status === 401 && message === 'Unauthenticated.') {
+      localStorage.removeItem('access_token')
+      localStorage.setItem('login_status', 'Session has expired.')
+
+      try {
+        const module = await import('../router')
+        module.default.replace({ path: '/login' })
+      } catch (_routerError) {
+        window.location.replace('/login')
+      }
+    }
+
+    return Promise.reject(error)
+  },
+)
+
 export default salnApi
