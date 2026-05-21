@@ -262,7 +262,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import salnApi from '../services/salnApi'
 import authAPI from '@/services/api'
-import { onBeforeRouteEnter, useRouter } from 'vue-router'
+import { beforeRouteEnter, useRouter } from 'vue-router'
 
 const router = useRouter()
 const isDark = ref(false)
@@ -352,7 +352,7 @@ async function loadFormData() {
   applyPayload(data)
 }
 
-onBeforeRouteEnter(async (_to, _from, next) => {
+beforeRouteEnter(async (_to, _from, next) => {
   try {
     const response = await salnApi.get('/saln')
     const payload = response.data || {}
