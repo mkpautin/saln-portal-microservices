@@ -66,6 +66,11 @@ jobs:
           aws s3 cp dist/index.html s3://${{ secrets.S3_BUCKET_NAME }}/index.html \
             --cache-control "no-store,must-revalidate"
 
+      - name: Upload favicon
+        run: |
+          aws s3 cp dist/favicon.ico s3://${{ secrets.S3_BUCKET_NAME }}/favicon.ico \
+            --cache-control "no-store,must-revalidate"
+
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
