@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const salnApi = axios.create({
   baseURL: import.meta.env.VITE_SALN_API_URL || 'http://127.0.0.1:8001/api',
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
