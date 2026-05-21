@@ -92,7 +92,7 @@ onMounted(() => {
           class="theme-toggle"
           @click="toggleThemeMode"
         >
-          {{ isDark ? '☀️ Light' : '🌙 Dark' }}
+          {{ isDark ? '☀️' : '🌙' }}
       </button>
         
         <div class="brand-badge">
@@ -887,18 +887,27 @@ input:focus {
   background: #f1f5f9;
 }
 .theme-toggle {
-  width: 44px;
-  height: 44px;
+  position: fixed;
 
-  border-radius: 12px;
+  top: 24px;
+  right: 24px;
+
+  z-index: 9999;
+
+  width: 52px;
+  height: 52px;
+
+  border-radius: 999px;
 
   border: 1px solid var(--border);
 
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
+
+  backdrop-filter: blur(10px);
 
   color: var(--text-primary);
 
-  font-size: 1rem;
+  font-size: 1.1rem;
 
   cursor: pointer;
 
@@ -906,16 +915,52 @@ input:focus {
   align-items: center;
   justify-content: center;
 
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.12);
+
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
-    transform 0.15s ease;
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .theme-toggle:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.03);
 
-  background: #f3f4f6;
+  background: white;
+
+  box-shadow:
+    0 14px 30px rgba(15, 23, 42, 0.18);
+}
+
+/* DARK MODE */
+
+.dark .theme-toggle {
+  background: rgba(17, 24, 39, 0.85);
+
+  border: 1px solid var(--border);
+
+  color: white;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.dark .theme-toggle:hover {
+  background: #1f2937;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+  .theme-toggle {
+    top: 16px;
+    right: 16px;
+
+    width: 48px;
+    height: 48px;
+  }
 }
 .dark {
   --bg-primary: #0b1120;

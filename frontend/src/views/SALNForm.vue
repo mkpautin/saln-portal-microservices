@@ -21,7 +21,7 @@
         </form>
         <button
           type="button"
-          class="theme-toggle"
+          class="theme-float-btn"
           @click="toggleTheme"
         >
           {{ isDark ? '☀ Light' : '🌙 Dark' }}
@@ -1770,6 +1770,73 @@ input[type='checkbox'] {
 .theme-toggle:hover {
   background: #1f2937;
 }
+/* FLOATING THEME BUTTON */
+
+.theme-float-btn {
+  position: fixed;
+
+  top: 24px;
+  right: 24px;
+
+  z-index: 9999;
+
+  border: none;
+
+  border-radius: 999px;
+
+  padding: 12px 18px;
+
+  background: white;
+
+  color: rgba(17, 24, 39, 0.95);
+
+  font-size: 0.92rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.theme-float-btn:hover {
+  transform: translateY(-2px);
+
+  background: #2563eb;
+
+  box-shadow:
+    0 14px 30px rgba(37, 99, 235, 0.28),
+    0 4px 12px rgba(37, 99, 235, 0.18);
+}
+
+.dark .theme-float-btn {
+  background: rgba(30, 41, 59, 0.96);
+  color: #f8fafc;
+}
+
+.dark .theme-float-btn:hover {
+  background: #3b82f6;
+}
+
+@media (max-width: 768px) {
+  .theme-float-btn {
+    top: 16px;
+    right: 16px;
+
+    padding: 11px 15px;
+
+    font-size: 0.85rem;
+  }
+}
+
 
 /* DARK MODE */
 
