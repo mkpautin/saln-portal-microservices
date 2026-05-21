@@ -13,6 +13,15 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'pdftk' => [
+        'binary' => env('PDFTK_BINARY', 'pdftk'),
+    ],
+
+    'saln_pdf' => [
+        'disk' => env('SALN_PDF_DISK', 's3'),
+        'prefix' => env('SALN_PDF_S3_PREFIX', 'saln-pdf'),
+        'url_ttl_minutes' => (int) env('SALN_PDF_URL_TTL_MINUTES', 10),
+    ],
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),

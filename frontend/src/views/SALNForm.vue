@@ -247,7 +247,9 @@
         <button type="button" id="addRelativeInGovernmentServiceBtn">Add Relative</button>
       </div>
       <div class="save-button-container">
-        <button type="button" id="manualSaveBtn" class="save-btn">Save SALN</button>
+        <button type="button" id="manualSaveBtn" class="save-btn" @submit="persistDraft">
+          Save SALN
+        </button>
       </div>
     </form>
   </div>
@@ -697,7 +699,6 @@ function initSalnForm() {
                 <div class="form-row"><label>Description</label><input name="personal_properties[${index}][description]" value="${data.description || ''}"></div>
                 <div class="form-row"><label>Acquisition Year</label><input type="text" name="personal_properties[${index}][acquisition_year]" value="${data.acquisition_year || ''}"></div>
                 <div class="form-row"><label>Acquisition Cost / Amount</label><input type="number" step="0.01" min="0" class="personal-cost" name="personal_properties[${index}][acquisition_cost_amount]" value="${data.acquisition_cost_amount || ''}"></div>
-                ${ownerScopeField(`personal_properties[${index}][owner_scope]`, data.owner_scope)}
             </div>
         `
     const owner = document.createElement('div')
@@ -833,7 +834,31 @@ function initSalnForm() {
   }
 
   function createDraftRequestBody() {
-    return new FormData(saveForm)
+    const formData = new FormData(saveForm)
+
+    if (!saveForm) {
+      return formData
+    }
+
+    const ensureEmptyArray = (fieldName, fields) => {
+      if (saveForm.querySelector(`[name^="${fieldName}["]`)) {
+        return
+      }
+
+      fields.forEach((field) => {
+        formData.append(`${fieldName}[0][${field}]`, '')
+      })
+    }
+
+    ensureEmptyArray('additional_spouses', ['name'])
+    ensureEmptyArray('children', ['name', 'date_of_birth'])
+    ensureEmptyArray('real_properties', ['description'])
+    ensureEmptyArray('personal_properties', ['description'])
+    ensureEmptyArray('business_interests', ['name_of_entity_or_business_enterprise'])
+    ensureEmptyArray('relatives_in_government_service', ['name_of_relative'])
+    ensureEmptyArray('liabilities', ['nature'])
+
+    return formData
   }
 
   function createDraftSignature() {

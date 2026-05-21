@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Services\SalnPdf\SalnPdfGeneratorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+use Illuminate\Filesystem\AwsS3V3Adapter;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
 class SalnPdfController extends Controller
@@ -45,49 +44,38 @@ class SalnPdfController extends Controller
             report($exception);
 
             return response()->json([
-                'message' => 'PDF generation failed. Please try again.',
+                'message' => 'PDF generator failed. Please try again.',
             ], 500);
         }
 
-        $token = Str::random(64);
-        $expiresAt = now()->addMinutes($this->pdfTtlMinutes());
+        $expiresAt = now()->addMinutes($this->pdfUrlTtlMinutes());
 
-        Cache::put($this->cacheKey($token), [
-            'path' => $generated['path'],
-            'filename' => $generated['filename'],
-            'user_id' => $userId,
-        ], $expiresAt);
+        try {
+            $downloadUrl = $this->storePdfAndCreateUrl($generated['path'], $generated['filename'], $userId, $expiresAt);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'PDF upload failed. Please try again.',
+            ], 500);
+        } finally {
+            if (is_file($generated['path'])) {
+                unlink($generated['path']);
+            }
+        }
 
         return response()->json([
             'message' => 'PDF ready.',
-            'download_url' => url('/api/saln/pdf/download/'.$token),
+            'download_url' => $downloadUrl,
             'expires_at' => $expiresAt->toIso8601String(),
         ]);
     }
 
-    public function download(Request $request, string $token): BinaryFileResponse|JsonResponse
+    public function download(Request $request, string $token): JsonResponse
     {
-        $userId = $this->userIdFromAuth();
-        $payload = Cache::pull($this->cacheKey($token));
-
-        if (! is_array($payload) || (int) ($payload['user_id'] ?? 0) !== $userId) {
-            return response()->json([
-                'message' => 'Not found.',
-            ], 404);
-        }
-
-        $path = $payload['path'] ?? null;
-        $filename = $payload['filename'] ?? 'saln.pdf';
-
-        if (! is_string($path) || ! is_file($path)) {
-            return response()->json([
-                'message' => 'Not found.',
-            ], 404);
-        }
-
-        return response()->download($path, $filename, [
-            'Content-Type' => 'application/pdf',
-        ])->deleteFileAfterSend(true);
+        return response()->json([
+            'message' => 'PDF downloads are served through the pre-signed URL returned by /api/saln/pdf.',
+        ], 410);
     }
 
     /**
@@ -119,9 +107,65 @@ class SalnPdfController extends Controller
         return \App\Models\SalnForm::query()->where('user_id', $userId)->first();
     }
 
-    private function pdfTtlMinutes(): int
+    private function pdfUrlTtlMinutes(): int
     {
-        return (int) (env('SALN_PDF_TTL_MINUTES', 30));
+        return max(1, (int) config('services.saln_pdf.url_ttl_minutes', 10));
+    }
+
+    private function storePdfAndCreateUrl(string $path, string $filename, int $userId, \DateTimeInterface $expiresAt): string
+    {
+        $key = $this->pdfObjectKey($userId, $filename);
+        $stream = fopen($path, 'r');
+
+        if ($stream === false) {
+            throw new RuntimeException('Generated PDF unavailable.');
+        }
+
+        $disk = Storage::disk((string) config('services.saln_pdf.disk', 's3'));
+
+        try {
+            if ($disk instanceof AwsS3V3Adapter) {
+                $this->putS3ObjectWithoutAcl($disk, $key, $stream);
+            } else {
+                $disk->put($key, $stream, [
+                    'ContentType' => 'application/pdf',
+                ]);
+            }
+        } finally {
+            fclose($stream);
+        }
+
+        return $disk->temporaryUrl($key, $expiresAt, [
+            'ResponseContentType' => 'application/pdf',
+            'ResponseContentDisposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
+    private function pdfObjectKey(int $userId, string $filename): string
+    {
+        $prefix = trim((string) config('services.saln_pdf.prefix', 'saln-pdf'), '/');
+
+        return ($prefix !== '' ? $prefix.'/' : '').$userId.'/'.$filename;
+    }
+
+    /**
+     * Flysystem's S3 adapter sends an ACL on writes. Bucket-owner-enforced S3
+     * buckets reject ACLs, so PDF uploads use the AWS client directly.
+     *
+     * @param  resource  $body
+     */
+    private function putS3ObjectWithoutAcl(AwsS3V3Adapter $disk, string $key, mixed $body): void
+    {
+        $config = $disk->getConfig();
+        $root = trim((string) ($config['root'] ?? ''), '/');
+        $objectKey = $root !== '' ? $root.'/'.ltrim($key, '/') : ltrim($key, '/');
+
+        $disk->getClient()->putObject([
+            'Bucket' => $config['bucket'],
+            'Key' => $objectKey,
+            'Body' => $body,
+            'ContentType' => 'application/pdf',
+        ]);
     }
 
     private function blankSalnForm(int $userId): \App\Models\SalnForm
@@ -145,11 +189,6 @@ class SalnPdfController extends Controller
             'total_liabilities' => 0,
             'net_worth' => 0,
         ]);
-    }
-
-    private function cacheKey(string $token): string
-    {
-        return 'saln_pdf_token:'.$token;
     }
 
     private function containsSalnPayload(Request $request): bool

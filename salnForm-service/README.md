@@ -21,6 +21,19 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## SALN PDF generation on AWS
+
+The SALN PDF endpoint is Lambda-friendly: generated files are built under the system temp directory, uploaded to a private S3 bucket, and returned to the frontend as a 10-minute pre-signed URL.
+
+Required deployment settings:
+
+- `SALN_PDF_S3_BUCKET`: private S3 bucket for generated PDFs.
+- `SALN_PDF_S3_PREFIX`: object prefix, defaults to `saln-pdf`.
+- `SALN_PDF_URL_TTL_MINUTES`: pre-signed URL lifetime, defaults to `10`.
+- `PDFTK_BINARY`: path to the Lambda-compatible `pdftk` binary when it is not available as `pdftk`.
+
+The Lambda role needs `s3:PutObject` and `s3:GetObject` on the PDF bucket. Add an S3 lifecycle rule if generated PDFs should be removed automatically after the pre-signed URL expires. The PDF template must be included in the deployment at `storage/app/pdf-templates/saln_fillable_form.pdf`.
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.

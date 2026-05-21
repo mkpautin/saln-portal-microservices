@@ -10,11 +10,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "bref/bref": "^3.0",
-        "bref/laravel-bridge": "^3.0",
+        "bref/bref": "*",
+        "bref/laravel-bridge": "*",
         "laravel/framework": "^13.7",
-        "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "tymon/jwt-auth": "^2.3"
     },
     "require-dev": {
@@ -55,6 +54,9 @@
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
         ],
+        "pre-autoload-dump": [
+            "Aws\\Script\\Composer\\Composer::removeUnusedServices"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -77,7 +79,10 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        }
+        },
+        "aws/aws-sdk-php": [
+            "S3"
+        ]
     },
     "config": {
         "optimize-autoloader": true,

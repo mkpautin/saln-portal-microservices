@@ -4,7 +4,6 @@ namespace App\Services\SalnPdf;
 
 use App\Models\SalnForm;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use RuntimeException;
 use Symfony\Component\Process\Process;
@@ -15,29 +14,21 @@ class SalnPdfGeneratorService
 
     private const OWNER_SPOUSE_CHILDREN = 'spouse_children';
 
-    private const MONEY_FIELDS = [
-        'acquisition_cost',
-        'acquisition_cost_amount',
-        'assessed_value',
-        'current_fair_market_value',
-        'outstanding_balance',
-    ];
-
     public function generate(SalnForm $salnForm): array
     {
-        $templatePath = storage_path('app/pdf-templates/saln_fillable_form.pdf');
+        $templatePath = base_path('storage/app/pdf-templates/saln_fillable_form.pdf');
 
         if (! is_file($templatePath) || ! is_readable($templatePath)) {
             throw new RuntimeException('PDF template unavailable. Please contact support.');
         }
 
-        $tempDir = storage_path('app/private/tmp/saln-pdf/'.Str::uuid()->toString());
-        File::ensureDirectoryExists($tempDir);
+        $tempDir = sys_get_temp_dir().'/saln-pdf/'.Str::uuid()->toString();
+        $this->ensureDirectory($tempDir);
 
         try {
             return $this->buildPdf($salnForm, $templatePath, $tempDir);
         } finally {
-            File::deleteDirectory($tempDir);
+            $this->deleteDirectory($tempDir);
         }
     }
 
@@ -78,8 +69,8 @@ class SalnPdfGeneratorService
         }
 
         $fileToken = now()->format('Ymd-His-u').'-'.Str::lower((string) Str::ulid());
-        $outputPath = storage_path('app/private/saln-'.(int) $salnForm->user_id.'-'.$fileToken.'.pdf');
-        File::ensureDirectoryExists(dirname($outputPath));
+        $outputPath = sys_get_temp_dir().'/saln-'.(int) $salnForm->user_id.'-'.$fileToken.'.pdf';
+        $this->ensureDirectory(dirname($outputPath));
 
         $mergeArgs = array_merge($pagesToMerge, ['cat', 'output', $outputPath]);
         $this->runPdftk($mergeArgs);
@@ -173,6 +164,7 @@ class SalnPdfGeneratorService
         $personalProperties = $partitioned['all_sections']['personal_properties'];
         $liabilities = $partitioned['all_sections']['liabilities'];
         $businessInterests = $partitioned['all_sections']['business_interests'];
+        $additionalSpouses = $this->normalizeRows($salnForm->additional_spouses ?? [], 2);
 
         $fieldMap = [
             'ctype_assumption' => $this->checkboxValue($salnForm->compliance_type === 'assumption', 'Yes_abam'),
@@ -197,6 +189,8 @@ class SalnPdfGeneratorService
             'ftype_separate' => $this->checkboxValue($salnForm->filing_type === 'separate'),
             'ftype_not_applicable' => $this->checkboxValue($salnForm->filing_type === 'not_applicable'),
             'no_addtl_spouses' => $this->checkboxValue(empty($salnForm->additional_spouses ?? [])),
+            'addtl_spouse_1' => (string) (($additionalSpouses[0]['name'] ?? '') ?: ''),
+            'addtl_spouse_2' => (string) (($additionalSpouses[1]['name'] ?? '') ?: ''),
             'has_bifc' => $this->checkboxValue(empty($businessInterests)),
             'has_relatives' => $this->checkboxValue(empty($salnForm->relatives_in_government_service ?? [])),
             'rp_subtotal' => $this->formatMoney($this->sumRows($realProperties, 'acquisition_cost')),
@@ -310,19 +304,64 @@ class SalnPdfGeneratorService
         $fdf .= "<< /Root 1 0 R >>\n";
         $fdf .= "%%EOF\n";
 
-        File::put($path, $fdf);
+        if (file_put_contents($path, $fdf) === false) {
+            throw new RuntimeException('PDF generation failed.');
+        }
+    }
+
+    private function ensureDirectory(string $path): void
+    {
+        if (is_dir($path)) {
+            return;
+        }
+
+        if (! mkdir($path, 0755, true) && ! is_dir($path)) {
+            throw new RuntimeException('PDF generation failed.');
+        }
+    }
+
+    private function deleteDirectory(string $path): void
+    {
+        if (! is_dir($path)) {
+            return;
+        }
+
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($items as $item) {
+            $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
+        }
+
+        rmdir($path);
     }
 
     private function runPdftk(array $args): void
     {
-        $binary = env('PDFTK_BINARY', 'pdftk');
+        $binary = config('services.pdftk.binary', 'pdftk');
         $command = array_merge([$binary], $args);
 
         $process = new Process($command);
         $process->setTimeout(60);
+
+        logger()->info('Running pdftk command', [
+            'binary' => $binary,
+            'args' => $args,
+            'binary_exists' => is_file($binary),
+            'binary_executable' => is_executable($binary),
+        ]);
+
         $process->run();
 
         if (! $process->isSuccessful()) {
+            logger()->error('pdftk command failed', [
+                'command' => $command,
+                'exit_code' => $process->getExitCode(),
+                'stdout' => $process->getOutput(),
+                'stderr' => $process->getErrorOutput(),
+            ]);
             throw new RuntimeException('PDF generation failed.');
         }
     }

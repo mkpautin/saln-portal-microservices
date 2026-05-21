@@ -142,14 +142,14 @@ class SalnFormController extends Controller
             'real_properties.*.exact_location' => ['nullable', 'string', 'max:500'],
             'real_properties.*.assessed_value' => ['nullable', 'numeric', 'min:0'],
             'real_properties.*.current_fair_market_value' => ['nullable', 'numeric', 'min:0'],
-            'real_properties.*.year_of_acquisition' => ['nullable', 'integer', 'between:1900,'.($currentYear + 1)],
+            'real_properties.*.year_of_acquisition' => ['nullable', 'string', 'max:255'],
             'real_properties.*.mode_of_acquisition' => ['nullable', 'string', 'max:255'],
             'real_properties.*.acquisition_cost' => ['nullable', 'numeric', 'min:0'],
             'real_properties.*.owner_scope' => ['nullable', 'in:declarant,spouse_children'],
 
             'personal_properties' => ['nullable', 'array'],
             'personal_properties.*.description' => ['nullable', 'string', 'max:255'],
-            'personal_properties.*.acquisition_year' => ['nullable', 'integer', 'between:1900,'.($currentYear + 1)],
+            'personal_properties.*.acquisition_year' => ['nullable', 'string', 'max:255'],
             'personal_properties.*.acquisition_cost_amount' => ['nullable', 'numeric', 'min:0'],
             'personal_properties.*.owner_scope' => ['nullable', 'in:declarant,spouse_children'],
 
