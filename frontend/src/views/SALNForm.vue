@@ -1282,8 +1282,8 @@ body {
   padding-bottom: 24px;
 
   /* around 1/8 spacing on both sides */
-  padding-left: 12.5%;
-  padding-right: 12.5%;
+  padding-left: clamp(12px, 5vw, 140px);
+  padding-right: clamp(12px, 5vw, 140px);
 }
 
 .container {
@@ -1294,11 +1294,13 @@ body {
 
 .actions-header {
   width: 100%;
+  margin-top: 50px;
 
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
+  flex-wrap: wrap;
 
   padding: 22px 28px;
 
@@ -1326,7 +1328,7 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -1384,6 +1386,10 @@ button:hover,
 
 .autosave-chip {
   padding: 8px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 
   border-radius: 999px;
 
@@ -1684,8 +1690,8 @@ input[type='checkbox'] {
 
 .two-column-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
   width: 100%;
 }
 
@@ -1780,8 +1786,9 @@ input[type='checkbox'] {
 .theme-float-btn {
   position: fixed;
 
-  top: 24px;
-  right: 24px;
+  top: 12px;
+  right: 12px;
+  max-width: calc(100vw - 24px);
 
   z-index: 9999;
 
@@ -1833,12 +1840,12 @@ input[type='checkbox'] {
 
 @media (max-width: 768px) {
   .theme-float-btn {
-    top: 16px;
-    right: 16px;
+    top: 8px;
+    right: 8px;
 
-    padding: 11px 15px;
+    padding: 10px 12px;
 
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -1977,5 +1984,42 @@ input[type='checkbox'] {
 .dark ::-webkit-scrollbar-track {
   background: #0f172a;
 }
+* {
+  box-sizing: border-box;
+  min-width: 0;
+}
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+@media (max-width: 768px) {
+  .actions-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .header-actions button {
+    width: 100%;
+  }
+}
+.list-item {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.section {
+  padding: 20px;
+}
+@media (max-width: 480px) {
+  .section {
+    padding: 16px;
+  }
+}
+
 </style>
 ```

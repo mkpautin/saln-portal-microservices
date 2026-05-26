@@ -394,12 +394,12 @@ body {
   width: 100%;
   min-height: calc(100vh - 100px);
 
-  padding: 50px 40px;
+  padding: clamp(20px, 4vw, 50px);
 
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
 
-  gap: 50px;
+  gap: clamp(24px, 4vw, 50px);
 
   align-items: center;
 }
@@ -495,8 +495,7 @@ body {
 }
 
 .login-card {
-  width: 100%;
-  max-width: 470px;
+  width: min(100%, 470px);
 
   background: white;
 
@@ -533,6 +532,8 @@ body {
 
 .form-row {
   margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
 }
 
 label {
@@ -553,6 +554,7 @@ label {
 input[type='email'],
 input[type='text'] {
   width: 100%;
+  min-width: 0;
 
   border: 1px solid var(--border);
 
@@ -646,6 +648,8 @@ input:focus {
   color: #1e40af;
 
   font-weight: 600;
+
+  min-height: 52px;
 }
 
 /* ERROR */
@@ -797,7 +801,8 @@ input:focus {
   }
 
   .title {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 8vw, 2.7rem);
+    line-height: 1.15;
   }
 
   .info-grid {
@@ -806,6 +811,15 @@ input:focus {
 
   .login-card {
     padding: 24px;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .login-header h2 {
+    font-size: 1.6rem;
   }
 }
 
@@ -825,7 +839,7 @@ input:focus {
   background: #f1f5f9;
 }
 .theme-toggle {
-  position: fixed;
+  position: absolute;
 
   top: 24px;
   right: 24px;
@@ -888,13 +902,13 @@ input:focus {
 
 /* MOBILE */
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .theme-toggle {
-    top: 16px;
-    right: 16px;
+    width: 42px;
+    height: 42px;
 
-    width: 48px;
-    height: 48px;
+    top: 12px;
+    right: 12px;
   }
 }
 .dark {
@@ -1072,5 +1086,111 @@ input:focus {
 
 .dark .info-card p {
   color: #cbd5e1;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+input,
+button {
+  max-width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 480px) {
+  .login-card {
+    padding: 20px;
+    border-radius: 18px;
+  }
+}
+.brand {
+  min-width: 0;
+}
+
+.brand-title {
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .brand {
+    align-items: flex-start;
+    padding-right: 60px;
+  }
+
+  .brand-title {
+    font-size: 0.9rem;
+  }
+
+  .brand-badge {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+}
+.modal {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+@media (max-width: 480px) {
+  .modal {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .modal-header {
+    align-items: flex-start;
+  }
+
+  .close-btn {
+    flex-shrink: 0;
+  }
+}
+
+.status,
+.error {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .info-card {
+    padding: 18px;
+  }
+
+  .hero {
+    gap: 28px;
+  }
+
+  .info-grid {
+    gap: 14px;
+  }
+}
+
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    position: relative;
+  }
+}
+
+.hero-left,
+.hero-right,
+.login-card,
+.info-card,
+.modal {
+  min-width: 0;
 }
 </style>
